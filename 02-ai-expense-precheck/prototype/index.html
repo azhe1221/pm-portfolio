@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="审得快 AI 费用报销预审助手中保真交互原型">
+  <title>审得快｜AI 费用报销预审助手</title>
+  <link rel="stylesheet" href="../wireframes/wireframes.css">
+  <link rel="stylesheet" href="prototype.css">
+</head>
+<body class="prototype-body">
+  <div id="expense-app" class="prototype-app">
+    <header class="app-topbar prototype-topbar">
+      <button class="brand brand-button" type="button" data-action="go-home">审得快</button>
+      <nav class="app-nav" aria-label="产品主导航">
+        <button class="top-nav-item is-active" type="button" data-action="go-home">案例入口</button>
+        <button class="top-nav-item" type="button" data-action="show-policy">当前规则 v1.2</button>
+      </nav>
+      <span class="data-label">仅合成数据</span>
+      <button class="top-reset" type="button" data-action="reset-demo">重置演示</button>
+    </header>
+
+    <main id="app-view" class="prototype-view" tabindex="-1"></main>
+    <div id="overlay-root"></div>
+    <div id="toast-root" class="toast-root" aria-live="polite" aria-atomic="true"></div>
+  </div>
+  <script src="prototype.js" defer></script>
+</body>
+</html>

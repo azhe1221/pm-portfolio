@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="周桂俊的 AI 产品经理作品集：这顿与审得快。">
+  <title>周桂俊｜AI 产品经理作品集</title>
+  <style>
+    :root { color-scheme: light; --ink:#17212b; --muted:#5c6873; --blue:#163a5f; --line:#d9e1e8; --paper:#f7f9fb; --accent:#e8f0f8; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color:var(--ink); background:var(--paper); line-height:1.65; }
+    a { color:inherit; }
+    .wrap { width:min(1080px, calc(100% - 40px)); margin:0 auto; }
+    header { padding:72px 0 48px; background:#fff; border-bottom:1px solid var(--line); }
+    .eyebrow { color:var(--blue); letter-spacing:.14em; font-size:12px; font-weight:700; text-transform:uppercase; }
+    h1 { margin:10px 0 8px; font-size:clamp(34px, 6vw, 64px); letter-spacing:-.04em; line-height:1.1; }
+    .lead { max-width:700px; margin:0; color:var(--muted); font-size:18px; }
+    .meta { display:flex; flex-wrap:wrap; gap:10px 22px; margin-top:24px; color:var(--muted); font-size:14px; }
+    main { padding:52px 0 72px; }
+    .section-title { margin:0 0 24px; font-size:26px; letter-spacing:-.02em; }
+    .projects { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:22px; }
+    .card { display:flex; flex-direction:column; min-height:390px; padding:28px; background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:0 8px 22px rgba(23,33,43,.05); }
+    .card-tag { color:var(--blue); font-size:12px; font-weight:700; letter-spacing:.1em; }
+    h2 { margin:10px 0 6px; font-size:28px; }
+    .card h3 { margin:20px 0 4px; font-size:15px; }
+    .card p { margin:0; color:var(--muted); }
+    .facts { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:22px 0; }
+    .fact { padding:10px; background:var(--accent); border-radius:10px; }
+    .fact strong { display:block; color:var(--blue); font-size:19px; }
+    .fact span { color:var(--muted); font-size:12px; }
+    .buttons { display:flex; flex-wrap:wrap; gap:10px; margin-top:auto; padding-top:24px; }
+    .button { display:inline-flex; align-items:center; justify-content:center; min-height:42px; padding:0 16px; border-radius:9px; text-decoration:none; font-size:14px; font-weight:700; }
+    .primary { color:#fff; background:var(--blue); }
+    .secondary { color:var(--blue); background:#fff; border:1px solid #b7c9da; }
+    .note { margin-top:28px; padding:18px 20px; background:#fff; border-left:4px solid var(--blue); color:var(--muted); font-size:14px; }
+    .note strong { color:var(--ink); }
+    footer { padding:24px 0 42px; color:var(--muted); font-size:13px; }
+    @media (max-width:720px) { .wrap { width:min(100% - 28px, 560px); } header { padding:48px 0 34px; } .projects { grid-template-columns:1fr; } .card { min-height:0; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="eyebrow">AI Product Manager Portfolio</div>
+      <h1>周桂俊的产品作品集</h1>
+      <p class="lead">软件工程本科｜AI 产品经理 / 产品经理方向。通过两个个人项目展示问题定义、AI 责任边界、原型交互与可验证交付。</p>
+      <div class="meta"><span>GPA 3.7 · 专业前 10%</span><span>预计 2027.06 毕业</span><span>可现场演示离线 Demo</span></div>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+      <h2 class="section-title">精选项目</h2>
+      <section class="projects" aria-label="精选项目">
+        <article class="card">
+          <div class="card-tag">01 · AI 消费决策</div>
+          <h2>这顿</h2>
+          <p>AI 外卖决策助手：先守住预算、时限和排除项，再将菜单压缩为 3 个理由清晰、取舍透明的选择。</p>
+          <div class="facts"><div class="fact"><strong>30</strong><span>道模拟菜单</span></div><div class="fact"><strong>5</strong><span>种当餐模式</span></div><div class="fact"><strong>9/9</strong><span>逻辑测试通过</span></div></div>
+          <h3>重点展示</h3><p>多目标排序、硬约束过滤、自适应追问、解释与反馈闭环。</p>
+          <div class="buttons"><a class="button primary" href="./01-ai-takeout-decider/portfolio.html">查看项目案例</a><a class="button secondary" href="./01-ai-takeout-decider/index.html">打开 Demo</a></div>
+        </article>
+        <article class="card">
+          <div class="card-tag">02 · B2B AI 工作流</div>
+          <h2>审得快</h2>
+          <p>AI 费用报销预审助手：AI 读取材料，确定性规则核对制度，人工保留最终预审决定权。</p>
+          <div class="facts"><div class="fact"><strong>30</strong><span>条合成评测案例</span></div><div class="fact"><strong>3</strong><span>种结果状态</span></div><div class="fact"><strong>4</strong><span>条原型路径</span></div></div>
+          <h3>重点展示</h3><p>字段证据、置信度门控、版本化规则、异常行动与审计时间线。</p>
+          <div class="buttons"><a class="button primary" href="./02-ai-expense-precheck/portfolio/index.html">查看项目案例</a><a class="button secondary" href="./02-ai-expense-precheck/prototype/index.html">打开 Demo</a></div>
+        </article>
+      </section>
+      <div class="note"><strong>项目证据边界：</strong>两个项目均为个人作品集的验证前原型，使用模拟/合成数据；页面中的案例数量是交付规模，不代表真实用户、模型准确率、收入或效率提升结果。</div>
+    </div>
+  </main>
+  <footer><div class="wrap">© 周桂俊 · AI 产品经理作品集 · 如需查看完整 PRD、评测方案或现场演示，请联系简历中的联系方式。</div></footer>
+</body>
+</html>

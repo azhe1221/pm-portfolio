@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="审得快 AI 费用报销预审助手产品经理作品集展示页">
+  <title>审得快｜AI 费用报销预审助手作品集</title>
+  <link rel="stylesheet" href="portfolio.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top" aria-label="返回页面顶部"><span class="wordmark-mark">审</span><span>审得快</span></a>
+    <nav class="site-nav" aria-label="作品集章节导航">
+      <a href="#problem">问题</a>
+      <a href="#solution">方案</a>
+      <a href="#evidence">证据</a>
+      <a href="#roadmap">试点</a>
+      <a href="#reflection">反思</a>
+    </nav>
+    <a class="header-link" href="../prototype/index.html">打开 Demo <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="top">
+    <section class="hero section-band">
+      <div class="hero-inner content-width">
+        <div class="hero-copy">
+          <p class="eyebrow">AI 产品经理作品集 · 项目 02 · 验证前方案</p>
+          <h1>审得快</h1>
+          <p class="hero-title">让审核员把时间花在判断上，而不是重复找证据。</p>
+          <p class="hero-description">一个面向中小团队的可解释 AI 费用报销预审助手：AI 读取材料，确定性规则核对制度，人工保留最终决定权。</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="../prototype/index.html">进入可点击 Demo <span aria-hidden="true">→</span></a>
+            <a class="button button-secondary" href="#evidence">查看产品证据</a>
+          </div>
+        </div>
+        <div class="hero-snapshot" aria-label="项目摘要">
+          <div class="snapshot-label">一页项目摘要</div>
+          <div class="snapshot-row"><span>目标用户</span><strong>20–200 人团队的财务/行政审核员</strong></div>
+          <div class="snapshot-row"><span>核心问题</span><strong>票据、制度、附件和沟通在多个文件间往返核对</strong></div>
+          <div class="snapshot-row"><span>核心方案</span><strong>字段证据 + 规则三态 + 异常行动清单 + 人工决定</strong></div>
+          <div class="snapshot-row"><span>当前成果</span><strong>原型、30 条合成基准集、指标看板、受控试点方案</strong></div>
+          <div class="snapshot-note"><span class="status-dot"></span>真实业务结果：尚未产生，当前样本 N=0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="evidence-strip">
+      <div class="content-width evidence-strip-inner">
+        <span class="evidence-icon" aria-hidden="true">!</span>
+        <p><strong>先说明证据边界</strong>：这是个人作品集的验证前方案。所有用户、商业和模型质量结论都没有被包装成已发生事实；页面中的 Demo、基准集和看板用于展示产品判断与验证方法。</p>
+      </div>
+    </section>
+
+    <section id="problem" class="section-band section-white">
+      <div class="content-width">
+        <div class="section-heading">
+          <p class="section-number">01 / 问题定义</p>
+          <h2>先把“AI 能做什么”拆成“谁在什么时刻卡住了”。</h2>
+          <p>我没有把问题定义成“做一个 OCR 或报销机器人”，而是从审核员的一笔预审任务出发，拆开读、找、核、问四类重复工作。</p>
+        </div>
+        <div class="problem-grid">
+          <article class="problem-item"><span class="problem-index">01</span><h3>读</h3><p>从发票、行程单、支付截图里重复读取金额、日期、商户和票号。</p></article>
+          <article class="problem-item"><span class="problem-index">02</span><h3>找</h3><p>定位费用类型对应的制度、额度和必需附件。</p></article>
+          <article class="problem-item"><span class="problem-index">03</span><h3>核</h3><p>对照字段一致性、额度、日期窗口和材料完整性。</p></article>
+          <article class="problem-item"><span class="problem-index">04</span><h3>问</h3><p>发现问题后重新组织原因，联系员工补充或修改。</p></article>
+        </div>
+        <div class="decision-callout">
+          <div><span class="callout-kicker">产品切入</span><strong>审批前预审</strong></div>
+          <p>既能创造效率价值，又不越过正式审批、付款和财务责任边界。</p>
+          <a class="text-link" href="../docs/01-用户研究与JTBD.md">阅读用户研究与 JTBD <span aria-hidden="true">→</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section id="solution" class="section-band section-ink">
+      <div class="content-width">
+        <div class="section-heading section-heading-light">
+          <p class="section-number">02 / 方案与责任边界</p>
+          <h2>不是让模型替人审批，而是让每一层只承担自己擅长的责任。</h2>
+          <p>这是本项目最重要的 AI 产品判断：生成式能力负责理解和表达，确定性规则负责制度判断，人工负责事实确认与最终预审决定。</p>
+        </div>
+        <div class="responsibility-grid">
+          <article class="responsibility-card responsibility-ai"><span class="responsibility-label">AI 层</span><h3>读取与解释</h3><p>抽取金额、日期、商户等字段；绑定页码/区域证据；生成受约束的异常说明。</p><span class="responsibility-foot">不能直接输出“合规”结论</span></article>
+          <article class="responsibility-card responsibility-rule"><span class="responsibility-label">规则层</span><h3>执行制度</h3><p>使用发布中的规则版本，将已确认输入计算为 PASS、EXCEPTION 或 UNKNOWN。</p><span class="responsibility-foot">未知不会被默认通过</span></article>
+          <article class="responsibility-card responsibility-human"><span class="responsibility-label">人工层</span><h3>确认与决定</h3><p>修正事实、处理冲突和未知，选择预审通过、退回或要求补充，并留下理由。</p><span class="responsibility-foot">人工决定不等于正式付款审批</span></article>
+        </div>
+        <div class="flow-rail" aria-label="核心产品流程">
+          <div class="flow-step"><span>01</span><strong>上传材料</strong></div><span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span>02</span><strong>字段与证据</strong></div><span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span>03</span><strong>规则预审</strong></div><span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span>04</span><strong>异常行动</strong></div><span class="flow-arrow" aria-hidden="true">→</span>
+          <div class="flow-step"><span>05</span><strong>人工决定</strong></div>
+        </div>
+        <a class="dark-text-link" href="../docs/05-AI架构-数据契约-安全边界.md">查看 AI 架构与安全边界 <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <section id="evidence" class="section-band section-slate">
+      <div class="content-width">
+        <div class="section-heading">
+          <p class="section-number">03 / 可运行证据</p>
+          <h2>面试时可以直接点开的，不只是一张产品截图。</h2>
+          <p>每个入口都对应一类产品能力：任务闭环、技术质量和指标决策。打开前先看清数据性质。</p>
+        </div>
+        <div class="evidence-grid">
+          <article class="evidence-card evidence-card-primary">
+            <div class="evidence-card-top"><span class="evidence-type">可点击原型</span><span class="evidence-status">可直接演示</span></div>
+            <h3>中保真 Demo</h3>
+            <p>四组案例覆盖正常、低置信金额、异常/未知和补充材料重审；支持字段修正、重新运行、人工决定和时间线。</p>
+            <a class="button button-primary" href="../prototype/index.html">打开原型 <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="evidence-card">
+            <div class="evidence-card-top"><span class="evidence-type">指标结构</span><span class="evidence-status">合成演示数据</span></div>
+            <h3>产品指标看板</h3>
+            <p>以每周有效预审案例数 WVP 为北极星，单独展示 AI 质量和 P0 安全护栏，避免“自动通过率”掩盖风险。</p>
+            <a class="button button-secondary" href="../analytics/index.html">打开看板 <span aria-hidden="true">→</span></a>
+          </article>
+          <article class="evidence-card">
+            <div class="evidence-card-top"><span class="evidence-type">技术探针</span><span class="evidence-status">30 条合成案例</span></div>
+            <h3>评测与数据契约</h3>
+            <p>开发集/留出集、字段证据、规则一致性、提示注入和失败降级均有预先定义，不虚构模型准确率。</p>
+            <a class="button button-secondary" href="../docs/10-技术探针-数据集与评测方案.md">查看评测方案 <span aria-hidden="true">→</span></a>
+          </article>
+        </div>
+        <div class="evidence-links">
+          <a href="../wireframes/index.html">低保真线框</a>
+          <a href="../docs/08-可用性测试方案-任务脚本.md">可用性测试脚本</a>
+          <a href="../docs/04-PRD-审得快.md">PRD</a>
+          <a href="../data/benchmark-cases.json">查看合成基准数据</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="roadmap" class="section-band section-white">
+      <div class="content-width">
+        <div class="section-heading">
+          <p class="section-number">04 / 从 Demo 到真实验证</p>
+          <h2>90 天路线图的终点不是“接上 ERP”，而是知道值不值得继续投入。</h2>
+          <p>用 Gate A–D 管理不确定性：问题和购买者 → 任务和规则 → 受控真实数据 → 付费与扩大。任一 P0 安全问题都可以冻结路线图。</p>
+        </div>
+        <div class="gate-grid">
+          <article class="gate-card"><span class="gate-label">GATE A</span><h3>问题与购买者</h3><p>证明重复核对真实存在，并找到拥有预算、愿意提供下一步承诺的人。</p><strong>退出：≥3 位负责人愿意进入材料评估</strong></article>
+          <article class="gate-card"><span class="gate-label">GATE B</span><h3>任务与规则</h3><p>证明审核员能理解三态结果、异常证据和人工责任边界。</p><strong>退出：漏报 0、责任边界误读 0</strong></article>
+          <article class="gate-card"><span class="gate-label">GATE C</span><h3>受控真实数据</h3><p>在授权、最小化、专业复核的前提下完成连续窄场景预审。</p><strong>退出：连续 2 周产生 WVP</strong></article>
+          <article class="gate-card"><span class="gate-label">GATE D</span><h3>付费与扩大</h3><p>确认持续使用的价值能够覆盖处理、支持、获客和合规成本。</p><strong>退出：付费下一步 + 单案贡献毛利为正</strong></article>
+        </div>
+        <div class="roadmap-cta"><p>完整路线图、准入/阻断/退出标准和每周试点节奏：</p><a class="text-link" href="../docs/13-受控试点路线图-成果导向.md">打开受控试点路线图 <span aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+
+    <section class="section-band section-slate metrics-section">
+      <div class="content-width">
+        <div class="section-heading">
+          <p class="section-number">05 / 指标与商业判断</p>
+          <h2>把“看起来有效”拆成可以被否证的指标。</h2>
+        </div>
+        <div class="metrics-layout">
+          <div class="north-star-block"><span class="metric-kicker">NORTH STAR</span><strong>每周有效预审案例数</strong><p>完成当前规则运行、字段可追溯、人工决定已提交且无安全违规的唯一案例数。</p><a href="../docs/11-指标体系-埋点-实验看板.md">查看口径与事件字典 →</a></div>
+          <div class="metric-list">
+            <div><span>效率</span><strong>中位时长相对基线 ↓ ≥30%</strong><small>验证目标 [T]</small></div>
+            <div><span>质量</span><strong>关键规则漏报 = 0</strong><small>安全门槛 [T]</small></div>
+            <div><span>理解</span><strong>异常原因复述 ≥85%</strong><small>可用性目标 [T]</small></div>
+            <div><span>商业</span><strong>LTV ≥ 3 × CAC</strong><small>扩大前门槛 [T]</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reflection" class="section-band section-white">
+      <div class="content-width">
+        <div class="section-heading">
+          <p class="section-number">06 / 产品反思</p>
+          <h2>这个项目最值得展示的，是我知道哪些答案还没有被证明。</h2>
+        </div>
+        <div class="reflection-grid">
+          <article><span class="reflection-label reflection-strong">最强点</span><h3>把 AI、规则和人工的责任边界写成了可运行状态</h3><p>低置信、UNKNOWN、EXCEPTION、字段修正和人工决定不再只是口号，而是能在原型中演示、在数据契约中回放、在指标中监控。</p></article>
+          <article><span class="reflection-label reflection-gap">最大不足</span><h3>还没有真实审核员、真实制度和真实成本证据</h3><p>当前用户洞察、商业模式和模型质量都属于验证前假设；30 条合成案例适合测试结构，不足以代表真实世界。</p></article>
+          <article><span class="reflection-label reflection-next">重做优先级</span><h3>先做 Gate A 的真实任务观察，再决定扩大哪条能力</h3><p>如果问题频率、规则稳定性或付费者不成立，我会缩小到资料完整性或规则解释，而不是继续堆叠系统集成功能。</p></article>
+        </div>
+        <div class="interview-box"><div><span class="callout-kicker">项目边界</span><h3>当前 Demo 使用合成/匿名化示例，重点展示证据化预审、规则边界和人工责任闭环。</h3></div><a class="button button-primary" href="../docs/12-商业模式与单位经济假设.md">查看商业假设 <span aria-hidden="true">→</span></a></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="content-width footer-inner"><div><strong>审得快</strong><span>AI 费用报销预审助手 · 个人产品作品集</span></div><span>原型数据均为合成/匿名化示例 · 当前真实样本 N=0</span><a href="#top">回到顶部 ↑</a></div>
+  </footer>
+  <script src="portfolio.js" defer></script>
+</body>
+</html>

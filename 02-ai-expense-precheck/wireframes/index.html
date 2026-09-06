@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>审得快｜低保真线框板</title>
+  <link rel="stylesheet" href="wireframes.css">
+</head>
+<body>
+  <header class="board-header">
+    <p class="board-kicker">阶段 06B · 低保真设计基线</p>
+    <h1>「审得快」核心页面线框</h1>
+    <p class="board-summary">审核员主视角 · 仅使用虚构案例 · 用于评审信息层级、状态和责任边界</p>
+    <nav class="board-nav" aria-label="线框页面目录">
+      <a href="#s01">S01 案例入口</a>
+      <a href="#s02">S02 创建案例</a>
+      <a href="#s03">S03 字段证据</a>
+      <a href="#s04">S04 预审结果</a>
+      <a href="#s05">S05 异常详情</a>
+      <a href="#s06">S06 人工决定</a>
+      <a href="#s07">S07 审计时间线</a>
+    </nav>
+  </header>
+
+  <main class="board-main">
+    <section class="screen-section" id="s01">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S01</span>
+          <h2>案例入口</h2>
+        </div>
+        <p>基础最近案例，不引入复杂筛选或效率看板。</p>
+      </div>
+
+      <div class="app-frame" aria-label="案例入口低保真线框">
+        <header class="app-topbar">
+          <a class="brand" href="#s01">审得快</a>
+          <nav class="app-nav" aria-label="产品导航">
+            <a class="is-active" href="#s01">案例入口</a>
+            <a href="#rules-note">当前规则 v1.2</a>
+          </nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+
+        <div class="app-content">
+          <div class="page-title-row">
+            <div>
+              <p class="eyebrow">费用预审</p>
+              <h3>待处理案例</h3>
+              <p class="supporting">选择一笔案例继续核对，或使用合成材料创建新案例。</p>
+            </div>
+            <a class="action primary" href="#s02">新建案例</a>
+          </div>
+
+          <div class="notice neutral">
+            <strong>演示数据边界</strong>
+            <span>不要上传真实发票、身份证、银行账户或公司机密。</span>
+          </div>
+
+          <div class="table-wrap">
+            <table class="case-table">
+              <thead>
+                <tr>
+                  <th>案例</th>
+                  <th>提交人</th>
+                  <th>费用类型</th>
+                  <th>申请金额</th>
+                  <th>当前状态</th>
+                  <th>更新时间</th>
+                  <th><span class="visually-hidden">操作</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>BX-0007</strong></td>
+                  <td>员工-012</td>
+                  <td>差旅</td>
+                  <td>¥268.00</td>
+                  <td><span class="status unknown">1 项未知</span></td>
+                  <td>10:12</td>
+                  <td><a class="text-action" href="#s03">继续处理</a></td>
+                </tr>
+                <tr>
+                  <td><strong>BX-0008</strong></td>
+                  <td>员工-026</td>
+                  <td>市内交通</td>
+                  <td>¥86.00</td>
+                  <td><span class="status attention">待确认字段</span></td>
+                  <td>09:48</td>
+                  <td><a class="text-action" href="#s03">继续处理</a></td>
+                </tr>
+                <tr>
+                  <td><strong>BX-0009</strong></td>
+                  <td>员工-031</td>
+                  <td>办公采购</td>
+                  <td>¥142.50</td>
+                  <td><span class="status pass">预审已完成</span></td>
+                  <td>昨天</td>
+                  <td><a class="text-action" href="#s07">查看记录</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-section" id="s02">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S02</span>
+          <h2>创建案例</h2>
+        </div>
+        <p>优先使用预置任务，上传入口明确数据边界。</p>
+      </div>
+
+      <div class="app-frame" aria-label="创建案例低保真线框">
+        <header class="app-topbar">
+          <a class="brand" href="#s01">审得快</a>
+          <nav class="app-nav" aria-label="产品导航">
+            <a class="is-active" href="#s01">案例入口</a>
+            <a href="#rules-note">当前规则 v1.2</a>
+          </nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+
+        <div class="app-content narrow-content">
+          <div class="breadcrumb"><a href="#s01">案例入口</a><span>/</span><span>创建案例</span></div>
+          <div class="page-title-row">
+            <div>
+              <p class="eyebrow">步骤 1 / 2</p>
+              <h3>选择一组报销材料</h3>
+              <p class="supporting">预置案例用于验证不同风险状态，不代表真实业务结果。</p>
+            </div>
+          </div>
+
+          <div class="notice warning">
+            <strong>仅限合成或充分匿名化材料</strong>
+            <span>本原型不处理真实个人或企业财务数据。</span>
+          </div>
+
+          <fieldset class="choice-list">
+            <legend>预置合成案例</legend>
+            <label class="choice-row">
+              <input type="radio" name="demo-case">
+              <span class="choice-main">
+                <strong>正常案例</strong>
+                <span>材料齐全，字段清晰，适用规则全部通过</span>
+              </span>
+              <span class="choice-meta">流程 F-A</span>
+            </label>
+            <label class="choice-row is-selected">
+              <input type="radio" name="demo-case" checked>
+              <span class="choice-main">
+                <strong>低置信案例</strong>
+                <span>金额存在识别疑问，需要查看原文并修正</span>
+              </span>
+              <span class="choice-meta">流程 F-B</span>
+            </label>
+            <label class="choice-row">
+              <input type="radio" name="demo-case">
+              <span class="choice-main">
+                <strong>明确异常案例</strong>
+                <span>模拟额度超出，并缺少一项说明材料</span>
+              </span>
+              <span class="choice-meta">流程 F-C</span>
+            </label>
+          </fieldset>
+
+          <div class="upload-row">
+            <div>
+              <strong>或上传合成文件</strong>
+              <span>支持 PDF、JPG、PNG；失败文件不会被静默忽略。</span>
+            </div>
+            <button class="action secondary" type="button">选择文件</button>
+          </div>
+
+          <div class="footer-actions">
+            <a class="action secondary" href="#s01">取消</a>
+            <a class="action primary" href="#s03">开始预审</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-section" id="s03">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S03</span>
+          <h2>字段与证据核对</h2>
+        </div>
+        <p>桌面左右分栏；字段、原文和置信状态保持同步。</p>
+      </div>
+
+      <div class="app-frame tall-frame" aria-label="字段与证据核对低保真线框">
+        <header class="app-topbar">
+          <a class="brand" href="#s01">审得快</a>
+          <nav class="app-nav" aria-label="产品导航">
+            <a class="is-active" href="#s01">案例入口</a>
+            <a href="#rules-note">当前规则 v1.2</a>
+          </nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+
+        <div class="case-context">
+          <a href="#s01" aria-label="返回案例入口">&larr;</a>
+          <div><strong>BX-0007</strong><span>员工-012 · 差旅 · ¥268.00</span></div>
+          <span class="status attention">2 个字段待确认</span>
+          <span class="context-version">材料 v1 · 规则 v1.2</span>
+        </div>
+
+        <nav class="workspace-tabs" aria-label="案例工作台">
+          <a class="is-active" href="#s03">字段与证据 <span>2</span></a>
+          <a href="#s04">预审结果</a>
+          <a href="#s07">审计时间线</a>
+        </nav>
+
+        <div class="review-layout">
+          <section class="document-panel" aria-labelledby="document-title">
+            <div class="panel-toolbar">
+              <div><strong id="document-title">demo-invoice-01.pdf</strong><span>第 1 / 1 页</span></div>
+              <button class="text-button" type="button">适合页面</button>
+            </div>
+            <div class="document-canvas">
+              <div class="document-sheet">
+                <p class="doc-title">模拟电子发票</p>
+                <div class="doc-grid two">
+                  <span>购买方：示例科技有限公司</span>
+                  <span>发票号码：DEMO-008271</span>
+                  <span>销售方：示例商旅服务</span>
+                  <span>开票日期：2026-08-14</span>
+                </div>
+                <div class="doc-table-line header-line"><span>项目名称</span><span>金额</span></div>
+                <div class="doc-table-line"><span>差旅交通服务</span><span>¥268.00</span></div>
+                <div class="evidence-highlight">
+                  <span>价税合计（小写）</span>
+                  <strong>¥268.00</strong>
+                  <small>当前字段证据</small>
+                </div>
+                <div class="doc-lines"><span></span><span></span><span></span></div>
+                <p class="doc-footnote">仅为合成演示材料，不具备任何票据效力</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="fields-panel" aria-labelledby="fields-title">
+            <div class="panel-toolbar">
+              <div><strong id="fields-title">关键字段</strong><span>5 项 · 2 项需处理</span></div>
+            </div>
+
+            <div class="field-list">
+              <div class="field-row">
+                <div class="field-label"><span>商户名称</span><span class="confidence high">高置信</span></div>
+                <strong>示例商旅服务</strong>
+                <span class="field-evidence">来源：发票第 1 页</span>
+              </div>
+              <div class="field-row is-active">
+                <div class="field-label"><span>票据金额</span><span class="confidence low">低置信 · 阻断</span></div>
+                <div class="field-value-line"><strong>¥286.00</strong><span>候选值</span></div>
+                <span class="field-evidence">原文证据显示“¥268.00”</span>
+                <div class="field-actions">
+                  <button class="action compact secondary" type="button">确认候选</button>
+                  <button class="action compact primary" type="button">修正字段</button>
+                  <button class="text-button" type="button">无法判断</button>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field-label"><span>开票日期</span><span class="confidence high">高置信</span></div>
+                <strong>2026-08-14</strong>
+                <span class="field-evidence">来源：发票第 1 页</span>
+              </div>
+              <div class="field-row">
+                <div class="field-label"><span>发票号码</span><span class="confidence medium">中置信 · 建议确认</span></div>
+                <strong>DEMO-008271</strong>
+                <span class="field-evidence">来源：发票第 1 页</span>
+              </div>
+              <div class="field-row">
+                <div class="field-label"><span>费用类别</span><span class="confidence human">人工选择</span></div>
+                <strong>差旅</strong>
+                <span class="field-evidence">来源：申请信息</span>
+              </div>
+            </div>
+
+            <div class="blocking-note">
+              <strong>需先处理 1 个阻断字段</strong>
+              <span>相关额度规则暂不运行；保存修改后会自动标记旧结果过期。</span>
+            </div>
+            <div class="footer-actions panel-footer">
+              <button class="action secondary" type="button">保存草稿</button>
+              <button class="action primary" type="button" disabled>运行规则检查</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-section" id="s04">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S04</span>
+          <h2>预审结果总览</h2>
+        </div>
+        <p>未知优先，其次异常，最后通过；不增加虚假效率 KPI。</p>
+      </div>
+
+      <div class="app-frame tall-frame" aria-label="预审结果总览低保真线框">
+        <header class="app-topbar">
+          <a class="brand" href="#s01">审得快</a>
+          <nav class="app-nav" aria-label="产品导航">
+            <a class="is-active" href="#s01">案例入口</a>
+            <a href="#rules-note">当前规则 v1.2</a>
+          </nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+        <div class="case-context">
+          <a href="#s01" aria-label="返回案例入口">&larr;</a>
+          <div><strong>BX-0007</strong><span>员工-012 · 差旅 · ¥268.00</span></div>
+          <span class="status unknown">需人工复核</span>
+          <span class="context-version">运行 run-0009 · 规则 v1.2</span>
+        </div>
+        <nav class="workspace-tabs" aria-label="案例工作台">
+          <a href="#s03">字段与证据</a>
+          <a class="is-active" href="#s04">预审结果 <span>2</span></a>
+          <a href="#s07">审计时间线</a>
+        </nav>
+
+        <div class="workspace-content">
+          <div class="page-title-row compact-title">
+            <div>
+              <p class="eyebrow">模拟规则集 v1.2</p>
+              <h3>规则检查结果</h3>
+              <p class="supporting">系统预审不等于最终审批，所有决定均由审核员提交。</p>
+            </div>
+            <a class="action primary" href="#s06">提交人工决定</a>
+          </div>
+
+          <div class="status-summary" aria-label="规则状态统计">
+            <div class="summary-cell unknown-cell"><span>UNKNOWN</span><strong>1</strong><small>需人工判断</small></div>
+            <div class="summary-cell exception-cell"><span>EXCEPTION</span><strong>1</strong><small>明确异常</small></div>
+            <div class="summary-cell pass-cell"><span>PASS</span><strong>3</strong><small>规则通过</small></div>
+          </div>
+
+          <div class="rule-list" aria-label="规则检查列表">
+            <a class="rule-row unknown-row" href="#s05">
+              <span class="rule-marker">?</span>
+              <span class="rule-copy"><strong>差旅说明材料</strong><small>未检测到可确认的超额说明，无法判断是否适用例外。</small></span>
+              <span class="status unknown">UNKNOWN</span>
+              <span class="row-arrow">&rsaquo;</span>
+            </a>
+            <a class="rule-row exception-row" href="#s05">
+              <span class="rule-marker">!</span>
+              <span class="rule-copy"><strong>模拟差旅单笔额度</strong><small>实际 ¥268.00；模拟额度 ¥200.00；超出 ¥68.00。</small></span>
+              <span class="status exception">EXCEPTION</span>
+              <span class="row-arrow">&rsaquo;</span>
+            </a>
+            <div class="rule-row pass-row">
+              <span class="rule-marker">✓</span>
+              <span class="rule-copy"><strong>必填字段完整性</strong><small>金额、日期、商户和票号均有可用值。</small></span>
+              <span class="status pass">PASS</span>
+              <span class="row-arrow">&rsaquo;</span>
+            </div>
+            <div class="rule-row pass-row">
+              <span class="rule-marker">✓</span>
+              <span class="rule-copy"><strong>票据日期范围</strong><small>开票日期位于模拟提交窗口内。</small></span>
+              <span class="status pass">PASS</span>
+              <span class="row-arrow">&rsaquo;</span>
+            </div>
+            <div class="rule-row pass-row">
+              <span class="rule-marker">✓</span>
+              <span class="rule-copy"><strong>申请与票据金额一致</strong><small>申请金额与票据合计均为 ¥268.00。</small></span>
+              <span class="status pass">PASS</span>
+              <span class="row-arrow">&rsaquo;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-section" id="s05">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S05</span>
+          <h2>异常详情与行动清单</h2>
+        </div>
+        <p>桌面右侧上下文栏；规则依据与员工行动分开。</p>
+      </div>
+
+      <div class="app-frame tall-frame" aria-label="异常详情低保真线框">
+        <header class="app-topbar">
+          <a class="brand" href="#s01">审得快</a>
+          <nav class="app-nav" aria-label="产品导航">
+            <a class="is-active" href="#s01">案例入口</a>
+            <a href="#rules-note">当前规则 v1.2</a>
+          </nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+        <div class="case-context">
+          <a href="#s04" aria-label="返回预审结果">&larr;</a>
+          <div><strong>BX-0007</strong><span>员工-012 · 差旅 · ¥268.00</span></div>
+          <span class="status exception">存在异常</span>
+          <span class="context-version">运行 run-0009 · 规则 v1.2</span>
+        </div>
+        <nav class="workspace-tabs" aria-label="案例工作台">
+          <a href="#s03">字段与证据</a>
+          <a class="is-active" href="#s04">预审结果 <span>2</span></a>
+          <a href="#s07">审计时间线</a>
+        </nav>
+
+        <div class="drawer-layout">
+          <div class="drawer-background">
+            <p class="eyebrow">规则检查结果</p>
+            <h3>1 项异常，1 项未知</h3>
+            <div class="mini-rule active"><span class="status exception">EXCEPTION</span><strong>模拟差旅单笔额度</strong></div>
+            <div class="mini-rule"><span class="status unknown">UNKNOWN</span><strong>差旅说明材料</strong></div>
+            <div class="mini-rule"><span class="status pass">PASS</span><strong>必填字段完整性</strong></div>
+          </div>
+
+          <aside class="detail-drawer" aria-labelledby="finding-title">
+            <div class="drawer-header">
+              <div><span class="status exception">EXCEPTION</span><h3 id="finding-title">模拟差旅单笔额度</h3></div>
+              <a href="#s04" aria-label="关闭详情">&times;</a>
+            </div>
+
+            <section class="detail-section">
+              <h4>为什么出现异常</h4>
+              <p>该笔模拟差旅费用比单笔额度高 ¥68.00。</p>
+              <dl class="comparison-list">
+                <div><dt>实际金额</dt><dd>¥268.00</dd></div>
+                <div><dt>模拟额度</dt><dd>≤ ¥200.00</dd></div>
+                <div><dt>差值</dt><dd>+ ¥68.00</dd></div>
+              </dl>
+            </section>
+
+            <section class="detail-section">
+              <h4>判断依据</h4>
+              <p><strong>规则：</strong>TRAVEL_LIMIT_001 · v1.1</p>
+              <p><strong>模拟条款：</strong>DEMO_POLICY_01 / 4.2</p>
+              <a class="evidence-link" href="#s03">票据第 1 页 · “价税合计 ¥268.00”</a>
+            </section>
+
+            <section class="detail-section">
+              <h4>员工行动清单</h4>
+              <label class="check-row"><input type="checkbox" checked>补充超额原因说明</label>
+              <label class="check-row"><input type="checkbox" checked>提交负责人确认记录</label>
+              <button class="text-button" type="button">+ 添加人工说明</button>
+              <p class="field-evidence">系统原始建议会保留，人工编辑另行记录。</p>
+            </section>
+
+            <div class="footer-actions drawer-actions">
+              <a class="action secondary" href="#s03">检查字段</a>
+              <a class="action primary" href="#s06">进入人工决定</a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-section" id="s06">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S06</span>
+          <h2>人工决定确认</h2>
+        </div>
+        <p>无默认选项；存在未知项时首版禁用预审通过。</p>
+      </div>
+
+      <div class="app-frame modal-frame" aria-label="人工决定确认低保真线框">
+        <header class="app-topbar muted-behind">
+          <span class="brand">审得快</span>
+          <nav class="app-nav" aria-label="产品导航"><span>案例入口</span><span>当前规则 v1.2</span></nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+        <div class="modal-background" aria-hidden="true">
+          <div class="case-context"><span>&larr;</span><div><strong>BX-0007</strong><span>员工-012 · 差旅 · ¥268.00</span></div></div>
+          <div class="ghost-lines"><span></span><span></span><span></span><span></span></div>
+        </div>
+
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="decision-title">
+          <div class="dialog-header">
+            <div>
+              <p class="eyebrow">人工操作</p>
+              <h3 id="decision-title">提交预审决定</h3>
+            </div>
+            <a href="#s04" aria-label="关闭决定确认">&times;</a>
+          </div>
+          <p class="supporting">系统预审仅供辅助，当前决定将由你提交并写入审计时间线。</p>
+
+          <div class="decision-summary">
+            <span><strong>1</strong> 项未知</span>
+            <span><strong>1</strong> 项异常</span>
+            <span>依据 run-0009</span>
+          </div>
+
+          <fieldset class="decision-options">
+            <legend>选择决定</legend>
+            <label class="decision-row is-disabled">
+              <input type="radio" name="decision" disabled>
+              <span><strong>预审通过</strong><small>存在未知项时不可选择；请先补充或确认信息。</small></span>
+            </label>
+            <label class="decision-row">
+              <input type="radio" name="decision">
+              <span><strong>退回修改</strong><small>将已确认的异常和行动清单发送给员工。</small></span>
+            </label>
+            <label class="decision-row">
+              <input type="radio" name="decision">
+              <span><strong>要求补充材料</strong><small>保留当前案例，等待新材料版本后重新预审。</small></span>
+            </label>
+          </fieldset>
+
+          <div class="notice warning compact-notice">
+            <strong>这不是最终财务审批</strong>
+            <span>正式审批与付款仍在现有流程中完成。</span>
+          </div>
+
+          <div class="footer-actions">
+            <a class="action secondary" href="#s04">取消</a>
+            <button class="action primary" type="button" disabled>提交人工决定</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen-section" id="s07">
+      <div class="screen-heading">
+        <div>
+          <span class="screen-id">S07</span>
+          <h2>审计时间线</h2>
+        </div>
+        <p>按事件还原材料、字段、规则和人工决定，不覆盖历史。</p>
+      </div>
+
+      <div class="app-frame tall-frame" aria-label="审计时间线低保真线框">
+        <header class="app-topbar">
+          <a class="brand" href="#s01">审得快</a>
+          <nav class="app-nav" aria-label="产品导航">
+            <a class="is-active" href="#s01">案例入口</a>
+            <a href="#rules-note">当前规则 v1.2</a>
+          </nav>
+          <span class="data-label">仅合成数据</span>
+        </header>
+        <div class="case-context">
+          <a href="#s01" aria-label="返回案例入口">&larr;</a>
+          <div><strong>BX-0007</strong><span>员工-012 · 差旅 · ¥268.00</span></div>
+          <span class="status attention">等待补充材料</span>
+          <span class="context-version">案例版本 3</span>
+        </div>
+        <nav class="workspace-tabs" aria-label="案例工作台">
+          <a href="#s03">字段与证据</a>
+          <a href="#s04">预审结果</a>
+          <a class="is-active" href="#s07">审计时间线</a>
+        </nav>
+
+        <div class="workspace-content timeline-content">
+          <div class="page-title-row compact-title">
+            <div>
+              <p class="eyebrow">案例回放</p>
+              <h3>处理记录</h3>
+              <p class="supporting">当前页面展示设计结构，不代表已达到正式审计认证。</p>
+            </div>
+            <a class="action secondary" href="#s01">返回案例入口</a>
+          </div>
+
+          <ol class="timeline">
+            <li>
+              <span class="timeline-dot human-dot"></span>
+              <time>10:14</time>
+              <div class="timeline-event">
+                <div><strong>人工决定：要求补充材料</strong><span class="source-label human-source">审核员</span></div>
+                <p>原因：需要补充超额说明。依据预审运行 run-0009。</p>
+                <a href="#s06">查看决定详情</a>
+              </div>
+            </li>
+            <li>
+              <span class="timeline-dot rule-dot"></span>
+              <time>10:12</time>
+              <div class="timeline-event">
+                <div><strong>完成规则检查</strong><span class="source-label rule-source">规则引擎</span></div>
+                <p>规则集 policy_demo_travel v1.2：1 未知、1 异常、3 通过。</p>
+                <a href="#s04">查看运行 run-0009</a>
+              </div>
+            </li>
+            <li>
+              <span class="timeline-dot human-dot"></span>
+              <time>10:11</time>
+              <div class="timeline-event">
+                <div><strong>修正票据金额</strong><span class="source-label human-source">审核员</span></div>
+                <p>¥286.00 → ¥268.00；原因：OCR 数字识别错误。</p>
+                <a href="#s03">查看字段与证据</a>
+              </div>
+            </li>
+            <li>
+              <span class="timeline-dot ai-dot"></span>
+              <time>10:10</time>
+              <div class="timeline-event">
+                <div><strong>生成字段候选与证据</strong><span class="source-label ai-source">文档理解</span></div>
+                <p>提取版本 extractor_demo_v1；2 个字段需要人工确认。</p>
+              </div>
+            </li>
+            <li>
+              <span class="timeline-dot system-dot"></span>
+              <time>10:09</time>
+              <div class="timeline-event">
+                <div><strong>创建案例并保存材料 v1</strong><span class="source-label system-source">系统</span></div>
+                <p>1 个合成 PDF，共 1 页；数据分类：synthetic。</p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="decision-log" id="rules-note">
+      <h2>线框冻结项</h2>
+      <div class="decision-grid">
+        <div><strong>结构</strong><span>3 个一级入口 + 1 个单案例工作台</span></div>
+        <div><strong>证据</strong><span>桌面左右分栏，窄屏上下堆叠</span></div>
+        <div><strong>结果</strong><span>UNKNOWN → EXCEPTION → PASS</span></div>
+        <div><strong>决定</strong><span>无默认选项；未知时暂禁预审通过</span></div>
+        <div><strong>数据</strong><span>只使用合成或充分匿名化材料</span></div>
+        <div><strong>范围</strong><span>不包含 P1 规则编辑、批量审批和看板</span></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

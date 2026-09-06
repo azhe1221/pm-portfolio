@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="这顿 - 用三份可解释推荐，帮年轻人更快决定外卖。">
+  <title>这顿 · AI 外卖决策助手</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-map-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="icon-sparkles" viewBox="0 0 24 24"><path d="m12 3-1.9 5.1L5 10l5.1 1.9L12 17l1.9-5.1L19 10l-5.1-1.9L12 3Z"/><path d="M5 3v4M3 5h4M19 17v4M17 19h4"/></symbol>
+    <symbol id="icon-sliders" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="icon-wallet" viewBox="0 0 24 24"><path d="M20 7V6a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v10H5a3 3 0 0 1-3-3V7"/><path d="M16 14h.01"/></symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5"/><path d="M18.5 9a7 7 0 0 0-11.9-2.5L4 9m16 6-2.6 2.5A7 7 0 0 1 5.5 15"/></symbol>
+    <symbol id="icon-bookmark" viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1Z"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+  </svg>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" href="./" aria-label="这顿首页">
+        <span class="brand-mark">这顿</span>
+        <span class="brand-subtitle">AI 外卖决策</span>
+      </a>
+      <div class="header-actions">
+        <label class="location-control">
+          <svg class="icon" aria-hidden="true"><use href="#icon-map-pin"></use></svg>
+          <span class="sr-only">用餐位置</span>
+          <select id="locationSelect" aria-label="用餐位置">
+            <option value="杭州·滨江">杭州·滨江</option>
+            <option value="杭州·西湖">杭州·西湖</option>
+            <option value="上海·徐汇">上海·徐汇</option>
+          </select>
+        </label>
+        <button class="icon-button" id="profileButton" type="button" aria-label="查看我的偏好" data-tooltip="我的偏好">
+          <svg class="icon" aria-hidden="true"><use href="#icon-user"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="decision-panel" aria-labelledby="decisionTitle">
+      <div class="section-heading">
+        <p class="eyebrow" id="mealPeriod">今天午餐</p>
+        <h1 id="decisionTitle">这顿，想怎么吃？</h1>
+        <p class="section-copy">先定优先级，剩下的交给 AI。</p>
+      </div>
+
+      <form id="decisionForm">
+        <fieldset class="form-section mode-section">
+          <legend>当前目标</legend>
+          <div class="segmented mode-grid" id="modeControl">
+            <button type="button" class="segment is-selected" data-mode="balanced" aria-pressed="true">均衡一点</button>
+            <button type="button" class="segment" data-mode="rush" aria-pressed="false">赶时间</button>
+            <button type="button" class="segment" data-mode="save" aria-pressed="false">想省钱</button>
+            <button type="button" class="segment" data-mode="healthy" aria-pressed="false">吃健康</button>
+            <button type="button" class="segment" data-mode="comfort" aria-pressed="false">犒劳自己</button>
+          </div>
+        </fieldset>
+
+        <div class="form-section constraint-grid">
+          <label class="range-field" for="budgetRange">
+            <span class="field-heading">
+              <span><svg class="icon" aria-hidden="true"><use href="#icon-wallet"></use></svg>预算上限</span>
+              <output id="budgetOutput" for="budgetRange">¥32</output>
+            </span>
+            <input id="budgetRange" type="range" min="18" max="60" step="1" value="32">
+            <span class="range-labels"><span>¥18</span><span>¥60</span></span>
+          </label>
+
+          <fieldset class="deadline-field">
+            <legend><svg class="icon" aria-hidden="true"><use href="#icon-clock"></use></svg>最晚送达</legend>
+            <div class="segmented compact" id="deadlineControl">
+              <button type="button" class="segment" data-deadline="25" aria-pressed="false">25 分</button>
+              <button type="button" class="segment is-selected" data-deadline="40" aria-pressed="true">40 分</button>
+              <button type="button" class="segment" data-deadline="55" aria-pressed="false">55 分</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <fieldset class="form-section">
+          <legend>这顿不要</legend>
+          <div class="chip-grid" id="exclusionControl">
+            <label class="filter-chip"><input type="checkbox" value="辣"><span>辣</span></label>
+            <label class="filter-chip"><input type="checkbox" value="香菜"><span>香菜</span></label>
+            <label class="filter-chip"><input type="checkbox" value="花生"><span>花生</span></label>
+            <label class="filter-chip"><input type="checkbox" value="海鲜"><span>海鲜</span></label>
+            <label class="filter-chip"><input type="checkbox" value="乳制品"><span>乳制品</span></label>
+            <label class="filter-chip"><input type="checkbox" value="油炸"><span>油炸</span></label>
+          </div>
+          <p class="safety-note"><svg class="icon" aria-hidden="true"><use href="#icon-info"></use></svg>排除项用于偏好筛选，不作为过敏原安全承诺。</p>
+        </fieldset>
+
+        <section class="adaptive-question" aria-labelledby="adaptiveQuestionTitle">
+          <p class="question-kicker"><svg class="icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>AI 只追问一个</p>
+          <h2 id="adaptiveQuestionTitle">如果必须取舍，你更在意哪一个？</h2>
+          <div class="segmented question-options" id="questionOptions"></div>
+        </section>
+
+        <details class="advanced-settings" id="advancedSettings">
+          <summary><svg class="icon" aria-hidden="true"><use href="#icon-sliders"></use></svg>微调推荐权重</summary>
+          <div class="weight-list">
+            <label for="weightHealth"><span>健康</span><output id="weightHealthOutput">25</output><input id="weightHealth" data-weight="health" type="range" min="0" max="100" value="25"></label>
+            <label for="weightTaste"><span>味道</span><output id="weightTasteOutput">30</output><input id="weightTaste" data-weight="taste" type="range" min="0" max="100" value="30"></label>
+            <label for="weightPrice"><span>价格</span><output id="weightPriceOutput">25</output><input id="weightPrice" data-weight="price" type="range" min="0" max="100" value="25"></label>
+            <label for="weightSpeed"><span>速度</span><output id="weightSpeedOutput">20</output><input id="weightSpeed" data-weight="speed" type="range" min="0" max="100" value="20"></label>
+          </div>
+        </details>
+
+        <button class="primary-button decision-cta" id="recommendButton" type="submit">
+          <svg class="icon" aria-hidden="true"><use href="#icon-sparkles"></use></svg>
+          让 AI 帮我定
+          <svg class="icon end-icon" aria-hidden="true"><use href="#icon-arrow"></use></svg>
+        </button>
+      </form>
+    </section>
+
+    <section class="results-panel" id="resultsPanel" aria-labelledby="resultsTitle" aria-live="polite">
+      <div class="results-placeholder" id="resultsPlaceholder">
+        <div class="plate-visual" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p>等你定下这顿的优先项</p>
+      </div>
+      <div class="results-content" id="resultsContent" hidden>
+        <div class="results-header">
+          <div>
+            <p class="eyebrow" id="matchSummary">已平衡 4 项偏好</p>
+            <h2 id="resultsTitle">这三份，最适合现在</h2>
+          </div>
+          <button class="secondary-button" id="refreshAllButton" type="button">
+            <svg class="icon" aria-hidden="true"><use href="#icon-refresh"></use></svg>换一批
+          </button>
+        </div>
+        <div class="recommendation-list" id="recommendationList"></div>
+        <p class="prototype-disclosure"><svg class="icon" aria-hidden="true"><use href="#icon-info"></use></svg>菜品与配送信息为原型模拟数据，营养值为估算区间。</p>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="app-dialog" id="orderDialog" aria-labelledby="orderDialogTitle">
+    <form method="dialog" class="dialog-surface">
+      <button class="dialog-close icon-button" value="cancel" aria-label="关闭">
+        <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+      </button>
+      <p class="eyebrow">模拟下单跳转</p>
+      <h2 id="orderDialogTitle">确认这顿</h2>
+      <div id="orderItemSummary" class="order-summary"></div>
+      <div class="platform-actions" id="platformActions">
+        <button class="platform-button meituan" type="button" data-platform="美团">去美团下单</button>
+        <button class="platform-button eleme" type="button" data-platform="饿了么">去饿了么下单</button>
+      </div>
+      <p class="dialog-note">作品集原型不会发起真实订单。</p>
+    </form>
+  </dialog>
+
+  <dialog class="app-dialog" id="feedbackDialog" aria-labelledby="feedbackTitle">
+    <form method="dialog" class="dialog-surface" id="feedbackForm">
+      <button class="dialog-close icon-button" value="cancel" aria-label="关闭">
+        <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+      </button>
+      <p class="eyebrow">让下一次更懂你</p>
+      <h2 id="feedbackTitle">这顿吃得怎么样？</h2>
+      <div id="feedbackItemName" class="feedback-item-name"></div>
+      <fieldset class="rating-field" data-rating-group="taste">
+        <legend>味道满意度</legend>
+        <div class="rating-options" aria-label="味道满意度"></div>
+      </fieldset>
+      <fieldset class="rating-field" data-rating-group="portion">
+        <legend>分量满意度</legend>
+        <div class="rating-options" aria-label="分量满意度"></div>
+      </fieldset>
+      <fieldset class="rating-field" data-rating-group="accuracy">
+        <legend>推荐准确度</legend>
+        <div class="rating-options" aria-label="推荐准确度"></div>
+      </fieldset>
+      <button class="primary-button" type="submit" value="submit">保存反馈</button>
+    </form>
+  </dialog>
+
+  <dialog class="app-dialog profile-dialog" id="profileDialog" aria-labelledby="profileTitle">
+    <form method="dialog" class="dialog-surface">
+      <button class="dialog-close icon-button" value="cancel" aria-label="关闭">
+        <svg class="icon" aria-hidden="true"><use href="#icon-x"></use></svg>
+      </button>
+      <p class="eyebrow">本地偏好档案</p>
+      <h2 id="profileTitle">我的这顿</h2>
+      <div class="profile-stats" id="profileStats"></div>
+      <section class="profile-section" aria-labelledby="learnedPreferenceTitle">
+        <h3 id="learnedPreferenceTitle">AI 已学到</h3>
+        <div id="learnedPreferences"></div>
+      </section>
+      <button class="secondary-button full-width" id="exportDataButton" type="button">
+        <svg class="icon" aria-hidden="true"><use href="#icon-download"></use></svg>导出验证数据
+      </button>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="./src/app.bundle.js"></script>
+</body>
+</html>

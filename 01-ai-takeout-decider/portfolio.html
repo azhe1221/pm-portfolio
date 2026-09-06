@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="这顿 AI 外卖决策助手产品案例：问题定义、方案取舍、AI 设计与验证计划。">
+  <title>这顿｜AI 外卖决策助手产品案例</title>
+  <link rel="stylesheet" href="./portfolio.css">
+</head>
+<body>
+  <div class="reading-progress" aria-hidden="true"><span id="readingProgress"></span></div>
+
+  <header class="portfolio-header">
+    <div class="nav-inner">
+      <a class="case-brand" href="#top" aria-label="返回案例顶部">
+        <strong>这顿</strong>
+        <span>产品案例</span>
+      </a>
+      <nav class="case-nav" aria-label="案例章节">
+        <a href="#problem">问题</a>
+        <a href="#decision">决策</a>
+        <a href="#demo">Demo</a>
+        <a href="#ai">AI</a>
+        <a href="#validation">验证</a>
+        <a href="#reflection">反思</a>
+      </nav>
+      <a class="header-action" href="./index.html" target="_blank" rel="noopener">打开 Demo</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-band" id="top" data-section="top">
+      <div class="hero-inner">
+        <div class="hero-meta">
+          <span>个人 AI 产品项目</span>
+          <span>目标岗位：AI 产品经理 / 产品经理</span>
+          <span>阶段：可验证原型</span>
+        </div>
+        <h1>这顿</h1>
+        <p class="hero-category">AI 外卖决策助手</p>
+        <p class="hero-statement">不是再给用户一份更长的菜单，而是把复杂取舍压缩成 3 个满足底线、理由清晰、可继续下单的选择。</p>
+
+        <div class="compression-visual" aria-label="将五类决策因素压缩为三个差异化推荐">
+          <div class="constraint-list">
+            <span>健康</span>
+            <span>价格</span>
+            <span>时间</span>
+            <span>味道</span>
+            <span>营养</span>
+          </div>
+          <div class="compression-line" aria-hidden="true"><span></span></div>
+          <div class="recommendation-output">
+            <strong>3</strong>
+            <div>
+              <span>最合意</span>
+              <span>时间更稳</span>
+              <span>营养更优</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="fact-strip" aria-label="已完成成果">
+          <div><strong>30</strong><span>道模拟菜单</span></div>
+          <div><strong>5</strong><span>种当餐模式</span></div>
+          <div><strong>19</strong><span>类本地事件</span></div>
+          <div><strong>9/9</strong><span>逻辑测试通过</span></div>
+        </div>
+
+        <div class="evidence-note">
+          <strong>证据边界</strong>
+          <span>当前没有真实上线和用户实验结果；页面中的百分比均为预设验证阈值，不是已取得的业务成果。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band problem-band" id="problem" data-section="problem">
+      <div class="section-inner">
+        <p class="section-index">01 / 问题定义</p>
+        <h2>用户不缺推荐，缺的是结束比较的机制</h2>
+        <div class="two-column intro-columns">
+          <p class="section-lead">高频外卖用户需要同时处理预算、配送时间、口味、健康和营养。平台擅长展示供给，但最后的多目标权衡仍由用户完成。</p>
+          <div class="problem-definition">
+            <span>问题重构</span>
+            <p>从“今天吃什么”转向“在冲突条件下，怎样更快做出不后悔的决定”。</p>
+          </div>
+        </div>
+        <figure class="evidence-figure wide-figure">
+          <img src="./docs/assets/01-journey-emotion.png" alt="外卖决策旅程情绪曲线，情绪低谷集中在浏览和多项比较阶段">
+          <figcaption>[H] 研究前旅程假设，待日记研究与访谈更新；图中最低点集中在多项比较阶段。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="content-band user-band" id="user" data-section="user">
+      <div class="section-inner">
+        <p class="section-index">02 / 用户与 JTBD</p>
+        <h2>先聚焦高频、强约束的当餐决策</h2>
+        <div class="jtbd-layout">
+          <div class="jtbd-statement">
+            <span>核心 JTBD [H]</span>
+            <p>当我饿了、时间有限却面对大量相似选项时，我想快速获得少量可信选择，以便不后悔地完成下单并继续学习或工作。</p>
+          </div>
+          <dl class="user-definition">
+            <div><dt>目标用户</dt><dd>18–26 岁、每周外卖至少 3 次的大学生与职场新人 [H]</dd></div>
+            <div><dt>高压场景</dt><dd>工作日午餐、预算明确、距离下一项任务不足 30 分钟 [H]</dd></div>
+            <div><dt>验证计划</dt><dd>20 人连续 7 天点餐日记，记录真实耗时、浏览和退出行为 [T]</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band decision-band" id="decision" data-section="decision">
+      <div class="section-inner">
+        <p class="section-index">03 / 机会与方案取舍</p>
+        <h2>三选一不是界面偏好，而是核心价值假设</h2>
+        <p class="section-lead compact-lead">一个答案效率最高但控制感弱；五项短列表仍可能触发比较。当前用“主推荐 + 两个差异化备选”平衡效率与自主感，并把数量本身纳入对照实验。</p>
+        <figure class="evidence-figure wide-figure ost-figure">
+          <img src="./docs/assets/03-opportunity-solution-tree.png" alt="机会解决方案树，从有效决策率拆解到表达约束、停止比较和理解健康依据三个机会">
+          <figcaption>[H] 机会和分支均为研究前假设，实验通过后才进入下一阶段。</figcaption>
+        </figure>
+        <div class="decision-principles">
+          <div><span>底线正确</span><p>预算、ETA、排除项先用规则过滤，候选为零时不自动突破。</p></div>
+          <div><span>减少比较</span><p>只给三个承担不同角色的结果，不把长列表换一种形式搬回来。</p></div>
+          <div><span>保留控制</span><p>通过锁定、单项替换和换一批，让用户能纠错而无需重新开始。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band demo-band" id="demo" data-section="demo">
+      <div class="section-inner">
+        <div class="demo-heading-row">
+          <div>
+            <p class="section-index">04 / 可交互 Demo</p>
+            <h2>从表达底线到完成选择，核心链路已可运行</h2>
+          </div>
+          <a class="text-link" href="./index.html" target="_blank" rel="noopener">全屏打开 Demo</a>
+        </div>
+        <div class="demo-layout">
+          <div class="demo-frame">
+            <div class="demo-frame-bar"><span></span><span></span><span></span><strong>可交互原型</strong></div>
+            <iframe src="./index.html" title="这顿 AI 外卖决策助手可交互原型" loading="lazy"></iframe>
+          </div>
+          <ol class="demo-flow">
+            <li><strong>表达情境</strong><span>选择“赶时间”，设置 25 元、25 分钟、不吃辣。</span></li>
+            <li><strong>规则过滤</strong><span>先移除违反预算、时限和排除项的候选。</span></li>
+            <li><strong>三项决策</strong><span>查看最合意、时间更稳和营养更优，并理解主要取舍。</span></li>
+            <li><strong>控制与反馈</strong><span>锁定、替换、模拟下单并提交餐后评价。</span></li>
+          </ol>
+        </div>
+        <p class="demo-disclosure">Demo 使用 30 道模拟菜单，不连接真实外卖平台，不会创建真实订单。</p>
+      </div>
+    </section>
+
+    <section class="content-band ai-band" id="ai" data-section="ai">
+      <div class="section-inner">
+        <p class="section-index">05 / AI 产品设计</p>
+        <h2>AI 不控制用户底线，只处理规则难以解决的部分</h2>
+        <div class="ai-summary">
+          <div><strong>规则层</strong><span>硬约束与安全边界，要求可审计、0 违规。</span></div>
+          <div><strong>排序层</strong><span>健康、味道、价格、速度加权，完成差异化重排序。</span></div>
+          <div><strong>生成层</strong><span>未来解析自然语言并生成有依据的简短解释。</span></div>
+        </div>
+        <figure class="evidence-figure wide-figure">
+          <img src="./docs/assets/04-ai-decision-flow.png" alt="AI 决策链路，规则过滤后进入多目标排序、三结果重排和忠实解释">
+          <figcaption>当前实现是确定性排序 [F]；自然语言解析和生成式解释仍为后续设想 [H]。</figcaption>
+        </figure>
+        <div class="algorithm-note">
+          <code>总分 = 健康×权重 + 味道×权重 + 价格适配×权重 + 速度适配×权重 + 偏好修正 − 拒绝惩罚</code>
+          <p>低置信营养结果不得进入“营养更优”；解释生成失败时降级为确定性模板。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band validation-band" id="validation" data-section="validation">
+      <div class="section-inner">
+        <p class="section-index">06 / 成功指标与验证</p>
+        <h2>成功不是多一次点击，而是 60 秒内完成合规决策</h2>
+        <div class="north-star">
+          <span>北极星指标</span>
+          <strong>有效决策率</strong>
+          <p>60 秒内选择推荐并进入下单、且无硬约束违规的会话 ÷ 展示推荐的会话</p>
+          <em>原型验证目标 ≥60% [T]</em>
+        </div>
+        <figure class="evidence-figure wide-figure funnel-figure">
+          <img src="./docs/assets/05-metrics-funnel.png" alt="从进入会话到再次使用的指标漏斗，每一层对应可行动指标">
+          <figcaption>图中口径与百分比均为验证设计，不是当前线上转化数据。</figcaption>
+        </figure>
+        <div class="experiment-sequence" aria-label="四阶段验证顺序">
+          <div><span>Gate 1</span><strong>问题价值</strong><p>20 人 7 天日记；≥60% 每周至少 3 次明显选择困难 [T]</p></div>
+          <div><span>Gate 1</span><strong>数据可行性</strong><p>100 家店字段完整率≥90%、深链成功≥95% [T]</p></div>
+          <div><span>阶段 2</span><strong>三选一价值</strong><p>40 人随机对照；中位决策时间下降≥30% [T]</p></div>
+          <div><span>阶段 3</span><strong>推荐正确性</strong><p>150 道菜基准；硬约束违规率=0 [T]</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band risk-band" id="risk" data-section="risk">
+      <div class="section-inner">
+        <p class="section-index">07 / 风险与商业判断</p>
+        <h2>最大风险不是模型，而是独立产品能否获得真实数据</h2>
+        <figure class="evidence-figure wide-figure risk-figure">
+          <img src="./docs/assets/02-assumption-priority.png" alt="关键风险假设矩阵，数据授权、推荐正确性和问题价值位于高影响高风险区域">
+          <figcaption>矩阵分数为研究前先验，用于安排验证顺序，不是实验结论。</figcaption>
+        </figure>
+        <div class="risk-actions">
+          <div><strong>价值不成立</strong><p>收窄至工作日午餐等高压场景；仍低频则停止。</p></div>
+          <div><strong>授权路径不成立</strong><p>从独立小程序转为外卖平台内能力，不以抓取绕过授权。</p></div>
+          <div><strong>CPS 单位经济为负</strong><p>评估平台合作或 B2B2C，不依靠补贴制造增长。</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band ownership-band" id="ownership" data-section="ownership">
+      <div class="section-inner">
+        <p class="section-index">08 / 个人贡献</p>
+        <h2>独立完成从问题推导到可测试原型的产品闭环</h2>
+        <div class="ownership-grid">
+          <div><span>发现与定义</span><p>三视角创意、风险假设、JTBD、画像、旅程与 OST。</p></div>
+          <div><span>方案与交付</span><p>PRD、功能优先级、交互原型、多目标推荐逻辑与范围边界。</p></div>
+          <div><span>验证与质量</span><p>北极星、实验卡、19 类事件、验收场景和推荐逻辑测试。</p></div>
+          <div><span>AI 产品判断</span><p>规则/排序/生成分层、数据契约、置信度、安全与降级策略。</p></div>
+        </div>
+        <p class="ownership-boundary"><strong>协作边界：</strong>这是个人项目，没有真实跨职能团队和平台合作；接口契约与验收标准用于展示协作准备度，不虚构推进经历。</p>
+      </div>
+    </section>
+
+    <section class="content-band reflection-band" id="reflection" data-section="reflection">
+      <div class="section-inner">
+        <p class="section-index">09 / 产品反思</p>
+        <h2>最强的是问题重构，最弱的是还没有真实证据</h2>
+        <div class="reflection-layout">
+          <div>
+            <span>最强点</span>
+            <h3>把“推荐什么”改写为“如何结束取舍”</h3>
+            <p>这一判断改变了北极星、答案数量、安全边界和首版范围。</p>
+          </div>
+          <div>
+            <span>最大不足</span>
+            <h3>先做了较完整原型，再补研究</h3>
+            <p>容易形成方案承诺；当前画像、痛点频率和价值仍需要真实行为验证。</p>
+          </div>
+          <div>
+            <span>如果重做</span>
+            <h3>先完成订单回放与 1/3/5 项低保真对照</h3>
+            <p>同时在第零天验证授权数据路径，再决定独立入口还是平台内形态。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-band evidence-band" id="evidence" data-section="evidence">
+      <div class="section-inner">
+        <p class="section-index">10 / 证据库</p>
+        <h2>主页面讲决策，完整文档支撑追问</h2>
+        <div class="document-list">
+          <a href="./docs/01-PRD-这顿.md" target="_blank" rel="noopener"><span>01</span><strong>PRD</strong><em>目标、范围、用户故事与验收</em></a>
+          <a href="./docs/03-用户旅程与机会方案树.md" target="_blank" rel="noopener"><span>02</span><strong>用户旅程与 OST</strong><em>机会推导与方案比较</em></a>
+          <a href="./docs/04-AI产品方案说明.md" target="_blank" rel="noopener"><span>03</span><strong>AI 产品方案</strong><em>规则、排序、生成与降级</em></a>
+          <a href="./docs/05-指标与实验方案.md" target="_blank" rel="noopener"><span>04</span><strong>指标与实验</strong><em>北极星、漏斗与验证 Gate</em></a>
+          <a href="./docs/06-验收测试与埋点字典.md" target="_blank" rel="noopener"><span>05</span><strong>验收与埋点</strong><em>质量控制和数据契约</em></a>
+          <a href="./docs/14-产品反思.md" target="_blank" rel="noopener"><span>06</span><strong>产品反思</strong><em>不足、失败动作与重做路径</em></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing-band">
+      <div class="section-inner closing-inner">
+        <p>当前结论</p>
+        <h2>我完成的不是一个已经成功的产品，而是一个可以被快速证伪的产品假设。</h2>
+        <div>
+          <a class="primary-action" href="./index.html" target="_blank" rel="noopener">体验可交互 Demo</a>
+          <a class="secondary-action" href="./deliverables/这顿-AI外卖决策助手-产品作品集报告.docx">查看完整报告</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="portfolio-footer">
+    <span>「这顿」AI 外卖决策助手</span>
+    <span>个人产品作品集 · 模拟数据 · 尚未真实上线</span>
+  </footer>
+
+  <script src="./portfolio.js"></script>
+</body>
+</html>

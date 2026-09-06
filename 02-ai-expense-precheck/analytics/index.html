@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="审得快 AI 费用报销预审助手指标看板结构演示">
+  <title>审得快｜指标看板</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard-shell">
+    <header class="dashboard-header">
+      <div class="dashboard-brand"><strong>审得快</strong><span>指标看板</span></div>
+      <nav class="dashboard-tabs" aria-label="看板视图">
+        <button class="tab-button is-active" type="button" data-tab="value" aria-selected="true">产品价值</button>
+        <button class="tab-button" type="button" data-tab="quality" aria-selected="false">AI 质量与护栏</button>
+        <button class="tab-button" type="button" data-tab="events" aria-selected="false">事件口径</button>
+      </nav>
+      <div class="header-actions">
+        <span class="synthetic-label">合成演示数据</span>
+        <label class="period-select">周期
+          <select id="period-select">
+            <option value="7">近 7 天</option>
+            <option value="28">近 28 天</option>
+          </select>
+        </label>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <div class="evidence-banner"><strong>数据边界</strong><span>本页用于展示指标架构与决策逻辑，所有数值均为合成示例，不代表真实业务结果。</span></div>
+
+      <section id="panel-value" class="dashboard-panel" data-panel="value">
+        <div class="section-heading">
+          <div><p>North Star</p><h1>每周有效预审案例数</h1><span>完成证据链、当前规则运行和人工决定，且没有安全违规的唯一案例数。</span></div>
+          <div class="metric-definition"><span>本周期</span><strong id="nsm-value">24</strong><small id="nsm-delta">较上周 +20%</small></div>
+        </div>
+
+        <div class="nsm-chart-layout">
+          <figure class="trend-figure">
+            <figcaption><strong>北极星趋势</strong><span id="trend-caption">近 7 天 · 演示目标 40</span></figcaption>
+            <svg id="trend-chart" viewBox="0 0 760 230" role="img" aria-labelledby="trend-title trend-desc">
+              <title id="trend-title">每周有效预审案例数趋势</title>
+              <desc id="trend-desc">合成演示数据，当前值 24，演示目标 40。</desc>
+              <g class="chart-grid">
+                <line x1="52" y1="36" x2="730" y2="36"></line>
+                <line x1="52" y1="82" x2="730" y2="82"></line>
+                <line x1="52" y1="128" x2="730" y2="128"></line>
+                <line x1="52" y1="174" x2="730" y2="174"></line>
+              </g>
+              <line class="target-line" x1="52" y1="55" x2="730" y2="55"></line>
+              <text class="target-label" x="724" y="47" text-anchor="end">演示目标</text>
+              <path id="trend-area" class="trend-area" d="M52,174 L165,162 L278,154 L391,137 L504,143 L617,125 L730,108 L730,196 L52,196 Z"></path>
+              <path id="trend-line" class="trend-line" d="M52,174 L165,162 L278,154 L391,137 L504,143 L617,125 L730,108"></path>
+              <g id="trend-points" class="trend-points"></g>
+              <g class="chart-axis"><text x="52" y="218">周一</text><text x="278" y="218">周三</text><text x="504" y="218">周五</text><text x="730" y="218" text-anchor="end">周日</text></g>
+            </svg>
+          </figure>
+
+          <aside class="definition-panel" aria-label="有效预审判定条件">
+            <div class="definition-title"><strong>有效预审判定</strong><span>五项必须同时成立</span></div>
+            <ol>
+              <li><span>01</span>材料格式受支持</li>
+              <li><span>02</span>关键字段已有处理状态</li>
+              <li><span>03</span>规则运行基于最新输入</li>
+              <li><span>04</span>人工决定绑定当前运行</li>
+              <li><span>05</span>没有 P0 安全违规</li>
+            </ol>
+          </aside>
+        </div>
+
+        <section class="metric-section" aria-labelledby="inputs-title">
+          <div class="subsection-heading"><div><p>Input Metrics</p><h2 id="inputs-title">北极星输入指标</h2></div><span>演示目标，不是当前结果</span></div>
+          <div class="metric-strip">
+            <div><span>支持格式案例启动数</span><strong id="metric-started">33</strong><small>唯一案例</small></div>
+            <div><span>有效预审完成率</span><strong id="metric-completion">72.7%</strong><small>目标 ≥80%</small></div>
+            <div><span>异常/未知闭环率</span><strong id="metric-closure">68.4%</strong><small>目标 ≥85%</small></div>
+            <div><span>中位完成时长</span><strong id="metric-duration">4分12秒</strong><small>需与手工基线对照</small></div>
+            <div><span>审核员周度复访率</span><strong id="metric-repeat">62.5%</strong><small>首轮先建基线</small></div>
+          </div>
+        </section>
+
+        <section class="funnel-section" aria-labelledby="funnel-title">
+          <div class="subsection-heading"><div><p>Core Funnel</p><h2 id="funnel-title">有效预审漏斗</h2></div><span>按正常、异常、未知分别复盘</span></div>
+          <div class="funnel-table" role="table" aria-label="有效预审漏斗">
+            <div class="funnel-row" role="row"><span role="cell">案例创建</span><div role="cell"><i style="width:100%"></i></div><strong role="cell">33</strong><small role="cell">100%</small></div>
+            <div class="funnel-row" role="row"><span role="cell">材料处理完成</span><div role="cell"><i style="width:94%"></i></div><strong role="cell">31</strong><small role="cell">93.9%</small></div>
+            <div class="funnel-row" role="row"><span role="cell">字段与证据就绪</span><div role="cell"><i style="width:88%"></i></div><strong role="cell">29</strong><small role="cell">87.9%</small></div>
+            <div class="funnel-row" role="row"><span role="cell">当前规则运行完成</span><div role="cell"><i style="width:82%"></i></div><strong role="cell">27</strong><small role="cell">81.8%</small></div>
+            <div class="funnel-row is-final" role="row"><span role="cell">有效预审完成</span><div role="cell"><i style="width:73%"></i></div><strong role="cell">24</strong><small role="cell">72.7%</small></div>
+          </div>
+        </section>
+
+        <section class="decision-section" aria-labelledby="decision-title">
+          <div class="subsection-heading"><div><p>Decision Queue</p><h2 id="decision-title">本周需要优先调查</h2></div><span>指标必须对应产品动作</span></div>
+          <div class="decision-table-wrap">
+            <table class="decision-table">
+              <thead><tr><th>信号</th><th>当前演示值</th><th>判断</th><th>产品动作</th></tr></thead>
+              <tbody>
+                <tr><td>材料处理失败</td><td>2 / 33</td><td><span class="status attention">需关注</span></td><td>查看文件类型和错误码，优先改善替换/重试路径</td></tr>
+                <tr><td>异常/未知未闭环</td><td>6 / 19</td><td><span class="status attention">低于目标</span></td><td>检查异常说明、行动清单和人工决定入口</td></tr>
+                <tr><td>P0 安全事件</td><td>0</td><td><span class="status safe">未触发</span></td><td>继续保持绝对数量告警，不与总体平均</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+
+      <section id="panel-quality" class="dashboard-panel" data-panel="quality" hidden>
+        <div class="section-heading compact-heading">
+          <div><p>Quality & Safety</p><h1>AI 质量与安全护栏</h1><span>质量按开发集/留出集和失败场景分层；以下数字仅用于展示看板布局。</span></div>
+        </div>
+
+        <div class="quality-strip">
+          <div><span>关键字段完全匹配</span><strong>94.7%</strong><small class="warn-text">低于演示目标 95%</small></div>
+          <div><span>证据命中率</span><strong>91.2%</strong><small>演示目标 ≥90%</small></div>
+          <div><span>规则一致率</span><strong>100%</strong><small>目标必须 100%</small></div>
+          <div><span>解释无依据陈述</span><strong>0</strong><small>任一条即阻断</small></div>
+        </div>
+
+        <div class="quality-layout">
+          <section class="quality-block" aria-labelledby="scenario-title">
+            <div class="subsection-heading"><div><p>Holdout Breakdown</p><h2 id="scenario-title">留出集场景表现</h2></div><span>11 条合成案例</span></div>
+            <div class="scenario-bars">
+              <div><span>清晰正常</span><div><i style="width:100%"></i></div><strong>100%</strong></div>
+              <div><span>低置信金额</span><div><i style="width:92%"></i></div><strong>92%</strong></div>
+              <div><span>超额缺说明</span><div><i style="width:100%"></i></div><strong>100%</strong></div>
+              <div><span>多来源冲突</span><div><i style="width:88%"></i></div><strong>88%</strong></div>
+              <div><span>提示注入</span><div><i style="width:100%"></i></div><strong>2/2</strong></div>
+            </div>
+          </section>
+
+          <section class="quality-block" aria-labelledby="latency-title">
+            <div class="subsection-heading"><div><p>Latency</p><h2 id="latency-title">处理耗时</h2></div><span>P95 演示值</span></div>
+            <dl class="latency-list">
+              <div><dt>文档处理</dt><dd><strong>6.8 秒</strong><span>目标 ≤8 秒</span></dd></div>
+              <div><dt>规则运行</dt><dd><strong>0.9 秒</strong><span>目标 ≤2 秒</span></dd></div>
+              <div><dt>解释生成</dt><dd><strong>1.4 秒</strong><span>模板降级 0.2 秒</span></dd></div>
+              <div><dt>单案变动成本</dt><dd><strong>¥0.038</strong><span>目标 ≤¥0.05</span></dd></div>
+            </dl>
+          </section>
+        </div>
+
+        <section class="safety-section" aria-labelledby="safety-title">
+          <div class="subsection-heading"><div><p>P0 Guardrails</p><h2 id="safety-title">安全事件必须逐条处理</h2></div><span>不使用平均值</span></div>
+          <div class="safety-grid">
+            <div><span>关键规则漏报</span><strong>0</strong><small>目标 0</small></div>
+            <div><span>低置信自动放行</span><strong>0</strong><small>目标 0</small></div>
+            <div><span>错误预审通过</span><strong>0</strong><small>目标 0</small></div>
+            <div><span>无依据决定</span><strong>0</strong><small>目标 0</small></div>
+            <div><span>提示注入越权</span><strong>0</strong><small>目标 0</small></div>
+          </div>
+          <p class="synthetic-footnote">上述为合成演示值。真实模型评测尚未执行，不能据此声称系统已达到安全门槛。</p>
+        </section>
+      </section>
+
+      <section id="panel-events" class="dashboard-panel" data-panel="events" hidden>
+        <div class="section-heading compact-heading">
+          <div><p>Measurement Contract</p><h1>事件口径与数据边界</h1><span>事件只记录受控结构化属性，不将票据原文或人工理由发送到分析系统。</span></div>
+        </div>
+        <div class="event-table-wrap">
+          <table class="event-table">
+            <thead><tr><th>事件</th><th>触发</th><th>关键属性</th><th>用于计算</th></tr></thead>
+            <tbody>
+              <tr><td><code>case_created</code></td><td>支持格式案例创建成功</td><td><code>source</code>、<code>supported_format</code></td><td>启动数、漏斗</td></tr>
+              <tr><td><code>document_processing_completed</code></td><td>文档处理成功或失败</td><td><code>status</code>、<code>duration_ms</code>、<code>error_code</code></td><td>处理成功率、P95</td></tr>
+              <tr><td><code>field_reviewed</code></td><td>确认、修正或标记未知</td><td><code>field_name</code>、<code>action</code>、<code>had_evidence</code></td><td>证据就绪率、修正率</td></tr>
+              <tr><td><code>rule_run_completed</code></td><td>三态规则运行结束</td><td><code>run_id</code>、版本、三态数量、耗时</td><td>规则健康、漏斗</td></tr>
+              <tr><td><code>human_decision_submitted</code></td><td>人工决定保存</td><td><code>decision</code>、<code>based_on_run_id</code>、关联项数</td><td>WVP、闭环率</td></tr>
+              <tr><td><code>safety_violation_detected</code></td><td>命中 P0 护栏</td><td>类型、模型版本、规则版本</td><td>安全告警</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <section class="data-boundary" aria-labelledby="boundary-title">
+          <div><p>Privacy Boundary</p><h2 id="boundary-title">分析系统禁止采集</h2></div>
+          <ul><li>票据原文与图片</li><li>姓名、手机号与员工号</li><li>税号、银行账户与发票号码</li><li>自由文本决定理由</li><li>具体行程和制度全文</li></ul>
+        </section>
+      </section>
+    </main>
+  </div>
+  <script src="dashboard.js" defer></script>
+</body>
+</html>
