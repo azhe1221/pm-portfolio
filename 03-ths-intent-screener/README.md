@@ -12,6 +12,8 @@
 
 需要 Node.js 18+（本机验证版本 24.21.0），无第三方依赖。
 
+在线体验：<https://azhe1221.github.io/pm-portfolio/03-ths-intent-screener/>
+
 ```bash
 cd 1
 node server/server.js
