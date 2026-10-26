@@ -1,0 +1,17 @@
+{
+  "name": "intent-screener",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "意图选股器：自然语言 → 可检查条件 → 确定性筛选与逐股解释",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js",
+    "test": "node tests/run_tests.js",
+    "fetch": "python scripts/fetch_snapshot.py",
+    "validate": "python scripts/validate_snapshot.py"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

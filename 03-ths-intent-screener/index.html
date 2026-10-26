@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>意图选股器 · 自然语言选股与策略解释</title>
+  <meta name="description" content="把自然语言选股意图转成可检查、可修改、可执行的条件，并用真实 A 股快照返回入选/排除理由。">
+  <link rel="stylesheet" href="assets/css/styles.css?v=20261026">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="意图选股器首页">
+        <span class="brand-mark">意</span>
+        <span class="brand-text">意图选股器<small>Intent Screener</small></span>
+      </a>
+      <div class="snapshot-pill" id="snapshot-pill">
+        <span class="dot"></span><span id="snapshot-status">数据加载中…</span>
+      </div>
+      <nav class="top-actions">
+        <button class="ghost" data-action="open-data">数据口径</button>
+        <button class="ghost" data-action="open-audit">审计记录</button>
+        <button class="ghost" data-action="selftest">自检</button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <section class="hero" id="hero">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="spark"></span> AI 意图解析 × 确定性筛选</div>
+          <h1>把一句话，变成<br><em>可检查</em>的选股条件。</h1>
+          <p class="lede">“经营改善、估值合理、走势相对稳定”不是可执行条件。先拆成因子、阈值和口径，再用真实数据逐只解释为什么入选、为什么排除。</p>
+        </div>
+        <div class="query-card">
+          <label for="query-input" class="field-label">描述你的选股意图</label>
+          <textarea id="query-input" rows="3" placeholder="例如：经营改善、估值合理、走势相对稳定"></textarea>
+          <div class="query-foot">
+            <span class="hint">支持中文短语、数值条件、行业与排除项</span>
+            <button class="primary" id="parse-btn">解析意图 <span class="arrow">→</span></button>
+          </div>
+          <div class="examples" id="examples">
+            <button class="example" data-query="经营改善、估值合理、走势相对稳定">经营改善 + 估值合理 + 走势稳定</button>
+            <button class="example" data-query="高成长、低负债、排除ST">高成长 + 低负债</button>
+            <button class="example" data-query="ROE大于15%，PE低于20，市值超过500亿">ROE&gt;15% + PE&lt;20 + 市值&gt;500亿</button>
+            <button class="example" data-query="半导体行业，毛利率高于30%，近60日涨幅不超过10%">半导体 + 高毛利 + 涨幅≤10%</button>
+            <button class="example" data-query="不要ST，排除停牌，只要主板">只要主板 + 排除ST</button>
+          </div>
+        </div>
+        <div class="pipeline" aria-label="产品流程">
+          <div class="pipe-step"><span>01</span><b>意图</b><small>自然语言</small></div>
+          <div class="pipe-line"></div>
+          <div class="pipe-step"><span>02</span><b>条件</b><small>因子 / 阈值 / 口径</small></div>
+          <div class="pipe-line"></div>
+          <div class="pipe-step"><span>03</span><b>校验</b><small>冲突 / 缺失 / 行业</small></div>
+          <div class="pipe-line"></div>
+          <div class="pipe-step"><span>04</span><b>筛选</b><small>确定性引擎</small></div>
+          <div class="pipe-line"></div>
+          <div class="pipe-step"><span>05</span><b>解释</b><small>逐只入选/排除</small></div>
+        </div>
+      </section>
+
+      <section class="workspace hidden" id="workspace">
+        <aside class="panel conditions-panel" aria-label="条件卡">
+          <div class="panel-head">
+            <div><span class="kicker">STEP 1</span><h2>条件卡</h2></div>
+            <button class="ghost small" id="reset-btn">重置</button>
+          </div>
+          <div class="query-summary" id="query-summary"></div>
+          <div class="parse-meta" id="parse-meta"></div>
+          <div class="conditions-list" id="conditions-list"></div>
+          <div id="assumptions"></div>
+          <div id="ambiguities"></div>
+          <div id="validation"></div>
+          <div class="run-box">
+            <div class="run-options">
+              <label class="check"><input type="checkbox" id="exclude-st" checked> 排除 ST</label>
+              <label class="check"><input type="checkbox" id="exclude-suspended" checked> 排除停牌</label>
+              <label class="select-label">板块
+                <select id="board-select">
+                  <option value="all">全部 A 股</option>
+                  <option value="main">主板</option>
+                  <option value="gem">创业板</option>
+                  <option value="star">科创板</option>
+                </select>
+              </label>
+            </div>
+            <button class="primary block" id="run-btn">运行筛选 <span class="arrow">→</span></button>
+            <p class="run-note">AI 只负责理解与建议；阈值、筛选、排序和解释均由确定性引擎完成。</p>
+          </div>
+        </aside>
+
+        <section class="panel results-panel" aria-label="筛选结果">
+          <div class="result-head">
+            <div><span class="kicker">STEP 2</span><h2 id="result-title">筛选结果</h2></div>
+            <div class="result-actions">
+              <button class="ghost small" id="save-btn">保存策略</button>
+              <button class="ghost small" id="compare-btn">对比 <span class="count" id="compare-count">0</span></button>
+              <button class="ghost small" id="export-btn">导出 JSON</button>
+            </div>
+          </div>
+          <div class="summary-cards" id="summary-cards"></div>
+          <div class="tabs" id="tabs" role="tablist">
+            <button data-tab="matched" class="active" role="tab">入选 <span id="tab-matched-count">—</span></button>
+            <button data-tab="excluded" role="tab">排除 <span id="tab-excluded-count">—</span></button>
+            <button data-tab="impact" role="tab">条件影响</button>
+            <button data-tab="quality" role="tab">数据质量</button>
+          </div>
+          <div class="tab-content" id="tab-content"></div>
+        </section>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>意图选股器 · 个人面试作品</span>
+      <span>数据快照：<b id="footer-date">—</b> · 不构成投资建议 · 不输出涨跌预测</span>
+    </footer>
+  </div>
+
+  <div class="drawer hidden" id="drawer" role="dialog" aria-modal="true" aria-label="详情">
+    <div class="drawer-backdrop" data-action="close-drawer"></div>
+    <div class="drawer-panel">
+      <div class="drawer-head"><div id="drawer-title"></div><button class="icon-btn" data-action="close-drawer" aria-label="关闭">×</button></div>
+      <div class="drawer-body" id="drawer-body"></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-label="弹窗">
+    <div class="modal-backdrop" data-action="close-modal"></div>
+    <div class="modal-panel">
+      <div class="modal-head"><h3 id="modal-title"></h3><button class="icon-btn" data-action="close-modal" aria-label="关闭">×</button></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast" role="status"></div>
+
+  <script type="module" src="assets/js/app.js?v=20261026"></script>
+</body>
+</html>

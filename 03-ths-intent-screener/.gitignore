@@ -1,0 +1,9 @@
+.chrome-profile*/
+/screenshot-*.png
+dom-test.html
+__pycache__/
+*.pyc
+.env
+.env.*
+node_modules/
+.DS_Store
