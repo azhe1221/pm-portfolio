@@ -5,6 +5,9 @@
   const overlayRoot = document.getElementById("overlay-root");
   const toastRoot = document.getElementById("toast-root");
   const appRoot = document.getElementById("expense-app");
+  const expenseCategories = ["办公采购", "差旅"];
+  const attachmentTypes = { pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg" };
+  const dateWindowDays = 30;
 
   const FIELD_META = {
     merchant: { label: "商户名称", source: "发票第 1 页" },
@@ -25,6 +28,7 @@
       documentName: "demo-office-01.pdf",
       documentMerchant: "示例办公供应",
       documentDate: "2026-08-15",
+      submissionDate: "2026-08-17",
       documentInvoiceNumber: "DEMO-001010",
       description: "材料齐全，字段清晰，适用规则全部通过",
       initialStatus: "review",
@@ -51,6 +55,7 @@
       documentName: "demo-invoice-01.pdf",
       documentMerchant: "示例商旅服务",
       documentDate: "2026-08-14",
+      submissionDate: "2026-08-17",
       documentInvoiceNumber: "DEMO-008271",
       description: "金额识别存在疑问，需要查看原文并修正",
       initialStatus: "review",
@@ -77,6 +82,7 @@
       documentName: "demo-travel-02.pdf",
       documentMerchant: "示例商旅服务",
       documentDate: "2026-08-12",
+      submissionDate: "2026-08-17",
       documentInvoiceNumber: "DEMO-001122",
       description: "字段已确认，但存在明确额度异常",
       initialStatus: "review",
@@ -103,6 +109,7 @@
       documentName: "demo-travel-03.pdf",
       documentMerchant: "示例商旅服务",
       documentDate: "2026-08-11",
+      submissionDate: "2026-08-17",
       documentInvoiceNumber: "DEMO-001203",
       description: "上次要求补充超额说明，等待新材料版本",
       initialStatus: "needs_info",
@@ -153,6 +160,7 @@
       selectedCaseId: null,
       selectedRuleId: null,
       selectedPreset: "normal",
+      nextImportId: 1,
       editingField: null,
       focusField: null,
       decision: null,
@@ -177,6 +185,12 @@
     return `¥${Number(value).toFixed(2)}`;
   }
 
+  function isoDateTime(value) {
+    if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return NaN;
+    const date = new Date(`${value}T00:00:00Z`);
+    return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value ? date.getTime() : NaN;
+  }
+
   function currentCase() {
     if (!state.selectedCaseId) return null;
     return Object.values(state.cases).find((item) => item.id === state.selectedCaseId) || null;
@@ -188,6 +202,10 @@
 
   function keyForCase(caseId) {
     return Object.keys(state.cases).find((key) => state.cases[key].id === caseId) || null;
+  }
+
+  function isMoney(value) {
+    return /^\d+(\.\d{1,2})?$/.test(value) && Number(value) > 0 && Number.isSafeInteger(Math.round(Number(value) * 100));
   }
 
   function nextEventTime(caseItem) {
@@ -232,6 +250,7 @@
   function confidenceLabel(field) {
     if (field.status === "human_confirmed" || field.status === "human_corrected") return { text: "人工确认", className: "human" };
     if (field.status === "unknown") return { text: "UNKNOWN", className: "low" };
+    if (field.status === "imported") return { text: "待核对", className: "medium" };
     if (field.confidence === "low") return { text: "低置信 · 阻断", className: "low" };
     if (field.confidence === "medium") return { text: "中置信 · 建议确认", className: "medium" };
     return { text: "高置信", className: "high" };
@@ -248,6 +267,16 @@
     const requiredFields = fieldEntries(caseItem).filter((field) => ["merchant", "amount", "invoiceDate", "invoiceNumber", "category"].includes(field.key));
     const requiredUnknown = requiredFields.some((field) => field.status === "unknown" || field.value === null || field.value === undefined || field.value === "");
     const amountUnknown = amount === null || Number.isNaN(amount);
+    const dateGap = (isoDateTime(caseItem.submissionDate) - isoDateTime(fields.invoiceDate.value)) / 86400000;
+    const dateStatus = !Number.isFinite(dateGap) ? "UNKNOWN" : (dateGap < 0 || dateGap > dateWindowDays ? "EXCEPTION" : "PASS");
+    const dateReason = dateStatus === "UNKNOWN" ? "缺少可确认的开票日期或提交日期。" :
+      `开票日期 ${fields.invoiceDate.value}，提交日期 ${caseItem.submissionDate}。${dateStatus === "PASS" ? "在" : "超出"}模拟提交窗口。`;
+    const category = fields.category.value;
+    const isTravel = category === "差旅";
+    const needsExplanation = isTravel && !amountUnknown && amount > 200;
+    const explanationStatus = isTravel && (amountUnknown || (needsExplanation && !caseItem.hasExcessExplanation)) ? "UNKNOWN" : "PASS";
+    const explanationReason = isTravel && amountUnknown ? "金额无法确认，暂时无法判断是否需要超额说明。" :
+      (needsExplanation ? (caseItem.hasExcessExplanation ? "已收到模拟超额说明材料。" : "未检测到可确认的超额说明，无法判断是否适用例外。") : "当前案例不需要超额说明。");
     const rules = [
       {
         id: "required_fields",
@@ -260,10 +289,11 @@
       {
         id: "date_window",
         name: "票据日期范围",
-        status: fields.invoiceDate.status === "unknown" ? "UNKNOWN" : "PASS",
-        reason: fields.invoiceDate.status === "unknown" ? "缺少可确认的开票日期。" : "开票日期位于模拟提交窗口内。",
-        evidence: "发票日期字段",
-        actionItems: fields.invoiceDate.status === "unknown" ? ["补充清晰的日期证据"] : []
+        status: dateStatus,
+        reason: dateReason,
+        evidence: "开票日期与提交日期",
+        evidenceField: "invoiceDate",
+        actionItems: dateStatus === "PASS" ? [] : ["核对开票日期与提交日期"]
       },
       {
         id: "amount_consistency",
@@ -278,20 +308,21 @@
       {
         id: "travel_limit",
         name: "模拟差旅单笔额度",
-        status: amountUnknown ? "UNKNOWN" : (caseItem.category === "差旅" && amount > 200 ? "EXCEPTION" : "PASS"),
-        reason: amountUnknown ? "无法判断是否超过模拟额度。" : (caseItem.category === "差旅" && amount > 200 ? `实际 ${formatMoney(amount)}；模拟额度 ≤ ¥200.00；超出 ${formatMoney(amount - 200)}。` : "金额在当前模拟额度内。"),
+        status: amountUnknown ? "UNKNOWN" : (needsExplanation ? "EXCEPTION" : "PASS"),
+        reason: amountUnknown ? "无法判断是否超过模拟额度。" : (needsExplanation ? `实际 ${formatMoney(amount)}；模拟额度 ≤ ¥200.00；超出 ${formatMoney(amount - 200)}。` : (isTravel ? "金额在当前模拟额度内。" : "此费用类别无需检查差旅额度。")),
         evidence: "发票金额字段 + policy_demo_travel / 1.2",
         actual: amount,
         expected: 200,
-        actionItems: amountUnknown ? ["确认金额或补充清晰票据"] : (caseItem.category === "差旅" && amount > 200 ? ["补充超额原因说明", "提交负责人确认记录"] : [])
+        actionItems: amountUnknown ? ["确认金额或补充清晰票据"] : (needsExplanation ? ["补充超额原因说明", "提交负责人确认记录"] : [])
       },
       {
         id: "excess_explanation",
         name: "差旅说明材料",
-        status: caseItem.category !== "差旅" || amountUnknown || amount <= 200 || caseItem.hasExcessExplanation ? "PASS" : "UNKNOWN",
-        reason: caseItem.category !== "差旅" || amount <= 200 ? "当前案例不需要超额说明。" : (caseItem.hasExcessExplanation ? "已收到模拟超额说明材料。" : "未检测到可确认的超额说明，无法判断是否适用例外。"),
+        status: explanationStatus,
+        reason: explanationReason,
         evidence: caseItem.hasExcessExplanation ? "demo-excess-note-v2.pdf" : "材料列表中缺少超额说明",
-        actionItems: caseItem.hasExcessExplanation ? [] : ["补充超额原因说明"]
+        evidenceField: caseItem.hasExcessExplanation ? "excessExplanation" : "materials",
+        actionItems: explanationStatus === "PASS" ? [] : [amountUnknown ? "确认票据金额" : "补充超额原因说明"]
       }
     ];
     return rules;
@@ -317,14 +348,16 @@
     };
   }
 
-  function setView(view) {
+  function setView(view, focusField = null) {
+    const importForm = viewRoot.querySelector("[data-import-form]");
+    if (importForm) clearImportPreview(importForm);
     state.view = view;
     state.selectedRuleId = null;
     state.editingField = null;
-    state.focusField = null;
+    state.focusField = focusField;
     overlayRoot.innerHTML = "";
     render();
-    window.requestAnimationFrame(() => viewRoot.focus({ preventScroll: true }));
+    if (!focusField) window.requestAnimationFrame(() => viewRoot.focus({ preventScroll: true }));
   }
 
   function showToast(message, tone) {
@@ -378,22 +411,24 @@
     updateTopbar();
     if (state.view === "home") viewRoot.innerHTML = renderHome();
     if (state.view === "create") viewRoot.innerHTML = renderCreate();
+    if (state.view === "import") viewRoot.innerHTML = renderImport();
     if (state.view === "processing") viewRoot.innerHTML = renderProcessing();
     if (state.view === "review") viewRoot.innerHTML = renderReview();
     if (state.view === "results") viewRoot.innerHTML = renderResults();
     if (state.view === "timeline") viewRoot.innerHTML = renderTimeline();
     if (state.view === "policy") viewRoot.innerHTML = renderPolicy();
     if (state.view !== "processing" && state.processing) state.processing = null;
-    if (state.view === "review" && state.focusField) {
-      window.requestAnimationFrame(() => {
-        const element = viewRoot.querySelector(`[data-field-row="${state.focusField}"]`);
-        element?.scrollIntoView({ block: "center", behavior: "smooth" });
-      });
-    }
+  }
+
+  function locateEvidence(fieldKey) {
+    setView("review", fieldKey);
+    const evidence = viewRoot.querySelector(`[data-evidence-field="${fieldKey}"]`);
+    evidence?.focus({ preventScroll: true });
+    evidence?.scrollIntoView({ block: "center", behavior: "smooth" });
   }
 
   function updateTopbar() {
-    const homeActive = state.view === "home" || state.view === "create";
+    const homeActive = ["home", "create", "import"].includes(state.view);
     document.querySelectorAll(".top-nav-item").forEach((button, index) => {
       button.classList.toggle("is-active", index === 0 ? homeActive : state.view === "policy");
     });
@@ -418,7 +453,7 @@
         <div><p class="view-kicker">费用预审</p><h1>待处理案例</h1><p>选择一笔案例继续核对，或创建一组新的合成材料。</p></div>
         <button class="action primary" type="button" data-action="go-create">新建案例</button>
       </div>
-      <div class="prototype-note"><strong>演示数据边界</strong><span>本原型只使用虚构案例；不接收真实发票、身份证、银行账户或公司机密。</span></div>
+      <div class="prototype-note"><strong>演示材料</strong><span>可体验预置案例，或在浏览器中导入自己的测试材料。</span></div>
       <div class="home-actions"><button class="action secondary" type="button" data-action="show-policy">查看当前规则说明</button></div>
       <section class="case-list-shell" aria-label="案例列表">
         <div class="case-list-head"><span>案例</span><span>提交人</span><span>费用类型</span><span>申请金额</span><span>当前状态</span><span>操作</span></div>
@@ -449,12 +484,183 @@
     return `<div class="prototype-content create-shell">
       <div class="prototype-breadcrumb"><button class="text-button" type="button" data-action="go-home">案例入口</button><span>/</span><span>创建案例</span></div>
       <div class="view-header"><div><p class="view-kicker">步骤 1 / 2</p><h1>选择一组报销材料</h1><p>预置案例用于验证不同风险状态，不代表真实业务结果。</p></div></div>
-      <div class="prototype-note warning"><strong>仅限合成或充分匿名化材料</strong><span>员工端、通知和真实财务系统不在本 Demo 内。</span></div>
+      <div class="create-upload"><div><strong>有自己的报销材料</strong><span>导入 JSON，或选择 PDF、JPG、PNG 后填写字段。</span></div><button class="action primary" type="button" data-action="go-import">导入材料</button></div>
       ${failure}
       <fieldset class="preset-list"><legend>预置合成案例</legend>${optionMarkup}</fieldset>
-      <div class="create-upload"><div><strong>或模拟上传材料</strong><span>支持 PDF、JPG、PNG；这里不读取真实文件。</span></div><button class="action secondary" type="button" data-action="show-file-failure">模拟失败状态</button></div>
+      <div class="create-upload"><div><strong>演示材料处理异常</strong></div><button class="action secondary" type="button" data-action="show-file-failure">模拟失败状态</button></div>
       <div class="view-actions"><button class="action secondary" type="button" data-action="go-home">取消</button><button class="action primary" type="button" data-action="start-preset">开始预审</button></div>
     </div>`;
+  }
+
+  function renderImport() {
+    return `<div class="prototype-content create-shell">
+      <div class="prototype-breadcrumb"><button class="text-button" type="button" data-action="go-home">案例入口</button><span>/</span><button class="text-button" type="button" data-action="go-create">新建案例</button></div>
+      <div class="view-header"><div><h1>导入报销材料</h1><p>JSON 直接读入字段。PDF 和图片可预览，票据字段由你填写。</p></div></div>
+      <div class="prototype-note"><strong>仅在当前页面处理</strong><span>文件保留在浏览器当前会话。刷新页面或重置演示后会清空。</span></div>
+      <form class="import-form" data-import-form>
+        <label>选择材料（最多 10 MB）<input type="file" name="material" accept=".json,.pdf,.png,.jpg,.jpeg" required></label>
+        <div data-import-preview></div>
+        <fieldset data-manual-fields hidden>
+          <legend>按申请和原件录入字段</legend>
+          <div class="import-grid">
+            <label>提交人<input type="text" name="subject" maxlength="100"></label>
+            <label>费用类别<select name="category">${expenseCategories.map((item) => `<option>${item}</option>`).join("")}</select></label>
+            <label>申请金额（元）<input type="number" name="claimedAmount" min="0.01" step="0.01"></label>
+            <label>票据金额（元）<input type="number" name="invoiceAmount" min="0.01" step="0.01"></label>
+            <label>开票日期<input type="date" name="invoiceDate"></label>
+            <label>提交日期<input type="date" name="submissionDate"></label>
+            <label>商户名称<input type="text" name="merchant" maxlength="100"></label>
+            <label>发票号码<input type="text" name="invoiceNumber" maxlength="100"></label>
+          </div>
+        </fieldset>
+        <p class="import-error" data-import-error role="alert"></p>
+        <div class="view-actions"><button class="action secondary" type="button" data-action="go-create">返回</button><button class="action primary" type="submit" disabled>导入并开始预审</button></div>
+      </form>
+    </div>`;
+  }
+
+  function fileExtension(file) {
+    return file?.name.split(".").pop().toLowerCase();
+  }
+
+  function clearImportPreview(form) {
+    if (form.dataset.previewUrl) URL.revokeObjectURL(form.dataset.previewUrl);
+    delete form.dataset.previewUrl;
+  }
+
+  async function loadAttachment(file, type) {
+    const header = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+    const signatures = {
+      "application/pdf": [37, 80, 68, 70, 45],
+      "image/png": [137, 80, 78, 71, 13, 10, 26, 10],
+      "image/jpeg": [255, 216, 255]
+    };
+    if (!signatures[type].every((byte, index) => header[index] === byte)) {
+      throw new Error("文件内容与扩展名不匹配，请选择可读取的 PDF、JPG 或 PNG。");
+    }
+    return URL.createObjectURL(file.slice(0, file.size, type));
+  }
+
+  function renderAttachment(url, type, fileName) {
+    const source = escapeHtml(url);
+    const title = escapeHtml(fileName);
+    const preview = type === "application/pdf"
+      ? `<object class="attachment-pdf" data="${source}" type="application/pdf" aria-label="${title}"></object>`
+      : `<img class="attachment-image" src="${source}" alt="${title}">`;
+    return `<div class="attachment-preview">${preview}<a class="text-button" href="${source}" target="_blank" rel="noopener">在新标签页查看原件</a></div>`;
+  }
+
+  function validateImport(raw) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("JSON 需包含一笔报销的字段。");
+    const values = {};
+    const textFields = { subject: "提交人", category: "费用类别", merchant: "商户名称", invoiceNumber: "发票号码" };
+    for (const [key, label] of Object.entries(textFields)) {
+      const value = typeof raw[key] === "string" ? raw[key].trim() : "";
+      if (!value || value.length > 100) throw new Error(`请填写有效的${label}（${key}）。`);
+      values[key] = value;
+    }
+    if (!expenseCategories.includes(values.category)) throw new Error("费用类别请选择办公采购或差旅。");
+    for (const [key, label] of [["claimedAmount", "申请金额"], ["invoiceAmount", "票据金额"]]) {
+      const value = String(raw[key] ?? "").trim();
+      if (!isMoney(value)) {
+        throw new Error(`${label}（${key}）须为大于 0 的人民币金额，最多两位小数。`);
+      }
+      values[key] = Number(value);
+    }
+    for (const [key, label] of [["invoiceDate", "开票日期"], ["submissionDate", "提交日期"]]) {
+      if (!Number.isFinite(isoDateTime(raw[key]))) throw new Error(`请填写有效的${label}（${key}，格式 YYYY-MM-DD）。`);
+      values[key] = raw[key];
+    }
+    return values;
+  }
+
+  async function handleImportFile(input) {
+    const form = input.form;
+    const file = input.files[0];
+    const extension = fileExtension(file);
+    const type = Object.hasOwn(attachmentTypes, extension) ? attachmentTypes[extension] : null;
+    const error = form.querySelector("[data-import-error]");
+    const preview = form.querySelector("[data-import-preview]");
+    const submit = form.querySelector('button[type="submit"]');
+    clearImportPreview(form);
+    preview.innerHTML = "";
+    error.textContent = "";
+    form.querySelector("[data-manual-fields]").hidden = !type;
+    submit.disabled = true;
+    if (!file) return;
+    if ((!type && extension !== "json") || file.size > 10 * 1024 * 1024) {
+      error.textContent = "请选择 10 MB 以内的 JSON、PDF、JPG 或 PNG。";
+      return;
+    }
+    if (!type) {
+      submit.disabled = false;
+      return;
+    }
+    try {
+      const url = await loadAttachment(file, type);
+      if (!form.isConnected || input.files[0] !== file) {
+        URL.revokeObjectURL(url);
+        return;
+      }
+      form.dataset.previewUrl = url;
+      preview.innerHTML = renderAttachment(url, type, file.name);
+      submit.disabled = false;
+    } catch (problem) {
+      if (form.isConnected && input.files[0] === file) error.textContent = problem.message;
+    }
+  }
+
+  async function importCase(submitEvent) {
+    const form = submitEvent.target;
+    if (!form.matches("[data-import-form]")) return;
+    submitEvent.preventDefault();
+    const file = form.elements.material.files[0];
+    if (!file || file.size > 10 * 1024 * 1024) return;
+    const isJson = fileExtension(file) === "json";
+    if (!isJson && !form.dataset.previewUrl) return;
+    const submit = form.querySelector('button[type="submit"]');
+    const error = form.querySelector("[data-import-error]");
+    error.textContent = "";
+    submit.disabled = true;
+    try {
+      let raw;
+      if (isJson) {
+        try {
+          raw = JSON.parse(await file.text());
+        } catch {
+          throw new Error("JSON 文件无法读取，请检查格式后重试。");
+        }
+      } else {
+        raw = Object.fromEntries(new FormData(form));
+      }
+      if (!form.isConnected || form.elements.material.files[0] !== file) return;
+      const values = validateImport(raw);
+      const id = `IMP-${String(state.nextImportId++).padStart(4, "0")}`;
+      const candidate = (value, source) => ({ value, source, confidence: "review", status: "imported" });
+      const fieldSource = isJson ? "导入的 JSON" : "按附件录入";
+      const caseItem = {
+        id, subject: values.subject, category: values.category, claimedAmount: values.claimedAmount,
+        documentAmount: values.invoiceAmount, documentName: file.name, documentMerchant: values.merchant,
+        documentDate: values.invoiceDate, documentInvoiceNumber: values.invoiceNumber, submissionDate: values.submissionDate,
+        importKind: isJson ? "json" : "attachment", attachmentUrl: form.dataset.previewUrl,
+        attachmentType: attachmentTypes[fileExtension(file)],
+        version: 1, status: "review", hasExcessExplanation: false,
+        fields: {
+          merchant: candidate(values.merchant, fieldSource),
+          amount: candidate(values.invoiceAmount, fieldSource),
+          invoiceDate: candidate(values.invoiceDate, fieldSource),
+          invoiceNumber: candidate(values.invoiceNumber, fieldSource),
+          category: candidate(values.category, isJson ? fieldSource : "申请信息")
+        },
+        events: [event("CASE_CREATED", "审核员", `导入案例 ${id}`, `材料 v1 · ${file.name}`, new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }))]
+      };
+      delete form.dataset.previewUrl;
+      state.cases[id] = caseItem;
+      beginCase(caseItem);
+    } catch (problem) {
+      error.textContent = problem.message;
+      submit.disabled = false;
+    }
   }
 
   function renderProcessing() {
@@ -491,14 +697,36 @@
   }
 
   function renderDocument(caseItem) {
-    const amount = caseItem.documentAmount;
-    const focused = state.focusField === "amount" ? "evidence-focus" : "";
-    const supplement = caseItem.hasExcessExplanation ? `<div class="supplement-document"><strong>demo-excess-note-v2.pdf</strong><span>补充说明 · 已加入案例 v${caseItem.version}</span></div>` : "";
-    return `<section class="document-panel prototype-document-panel" aria-labelledby="document-title"><div class="panel-toolbar"><div><strong id="document-title">${escapeHtml(caseItem.documentName)}</strong><span>第 1 / 1 页</span></div><span class="document-state">模拟原文</span></div><div class="document-canvas prototype-document"><div class="document-sheet">
-      <p class="doc-title">模拟电子发票</p><div class="doc-grid two"><span>购买方：示例科技有限公司</span><span>发票号码：${escapeHtml(caseItem.documentInvoiceNumber)}</span><span>销售方：${escapeHtml(caseItem.documentMerchant)}</span><span>开票日期：${escapeHtml(caseItem.documentDate)}</span></div>
-      <div class="doc-table-line header-line"><span>项目名称</span><span>金额</span></div><div class="doc-table-line"><span>${escapeHtml(caseItem.category)}服务</span><span>${formatMoney(amount)}</span></div>
-      <div class="evidence-highlight ${focused}"><span>价税合计（小写）</span><strong>${formatMoney(amount)}</strong><small>金额字段证据</small></div><div class="doc-lines"><span></span><span></span><span></span></div><p class="doc-footnote">仅为合成演示材料，不具备任何票据效力</p>
-      </div></div>${supplement}</section>`;
+    const imported = Boolean(caseItem.importKind);
+    const amountNeedsReview = caseItem.fields.amount.blocking;
+    const evidenceAttributes = (key, warning = false) => `class="evidence-target ${state.focusField === key ? "is-located" : ""} ${warning ? "needs-review" : ""}" data-evidence-field="${key}" tabindex="-1"`;
+    const supplement = caseItem.hasExcessExplanation
+      ? `<div ${evidenceAttributes("excessExplanation")}><div class="supplement-document"><strong>demo-excess-note-v2.pdf</strong><span>模拟超额说明 · 已加入案例 v${caseItem.version}</span></div></div>`
+      : "";
+    const attachment = caseItem.attachmentUrl
+      ? renderAttachment(caseItem.attachmentUrl, caseItem.attachmentType, caseItem.documentName)
+      : "";
+    const sourceLabel = attachment ? "附件原件与录入值" : (imported ? "导入的 JSON 字段" : "模拟原文");
+    return `<section class="document-panel prototype-document-panel" aria-labelledby="document-title">
+      <div class="panel-toolbar"><div><strong id="document-title">${escapeHtml(caseItem.documentName)}</strong></div><span class="document-state">${sourceLabel}</span></div>
+      <div class="document-canvas prototype-document"><div class="document-sheet">
+        <p class="doc-title">${attachment ? "原件与录入记录" : (imported ? "导入记录" : "模拟电子发票")}</p>
+        <div class="doc-grid two">
+          <span ${evidenceAttributes("invoiceNumber")}>发票号码：${escapeHtml(caseItem.documentInvoiceNumber)}</span>
+          <span ${evidenceAttributes("merchant")}>商户名称：${escapeHtml(caseItem.documentMerchant)}</span>
+          <span ${evidenceAttributes("invoiceDate")}>开票日期：${escapeHtml(caseItem.documentDate)}</span>
+          <span ${evidenceAttributes("category")}>申请信息 · 费用类别：${escapeHtml(caseItem.category)}</span>
+        </div>
+        <div ${evidenceAttributes("amount", amountNeedsReview)}>
+          <div class="document-amount"><span>${imported ? "导入时票据金额" : "价税合计（小写）"}</span><strong>${formatMoney(caseItem.documentAmount)}</strong></div>
+          ${amountNeedsReview ? "<small>金额候选置信度低，请对照原文核对</small>" : ""}
+        </div>
+        <p class="doc-footnote">申请金额 ${formatMoney(caseItem.claimedAmount)} · 提交日期 ${escapeHtml(caseItem.submissionDate)}</p>
+        ${attachment}
+      </div></div>
+      <div ${evidenceAttributes("materials")}><p class="document-materials">超额说明材料：${caseItem.hasExcessExplanation ? "已收到模拟说明" : "未收到"}</p></div>
+      ${supplement}
+    </section>`;
   }
 
   function renderFieldRow(caseItem, field) {
@@ -510,15 +738,15 @@
       const inputValue = field.key === "amount" ? Number(field.value || 0).toFixed(2) : escapeHtml(field.value || "");
       actionMarkup = `<form class="field-edit-form" data-field-form="${field.key}"><label>修正后的值<input data-field-input="${field.key}" value="${inputValue}" inputmode="decimal"></label><label>修正原因<select data-field-reason="${field.key}"><option value="OCR_DIGIT_ERROR">原文与候选不一致</option><option value="MANUAL_CORRECTION">人工核对后修正</option></select></label><div class="field-edit-actions"><button class="action compact secondary" type="button" data-action="cancel-edit">取消</button><button class="action compact primary" type="button" data-action="save-field" data-field="${field.key}">保存并重算</button></div></form>`;
     } else if (field.status === "unknown") {
-      actionMarkup = `<div class="field-actions"><button class="text-button" type="button" data-action="focus-field" data-field="${field.key}">查看原因</button></div>`;
+      actionMarkup = `<div class="field-actions"><button class="action compact secondary" type="button" data-action="edit-field" data-field="${field.key}">修正字段</button><button class="text-button" type="button" data-action="focus-field" data-field="${field.key}">查看证据</button></div>`;
     } else if (field.confidence === "low") {
-      actionMarkup = `<div class="field-actions"><button class="action compact secondary" type="button" data-action="confirm-field" data-field="${field.key}">确认候选</button><button class="action compact primary" type="button" data-action="edit-field" data-field="${field.key}">修正字段</button><button class="text-button" type="button" data-action="mark-unknown" data-field="${field.key}">无法判断</button></div>`;
-    } else if (field.status === "machine_extracted") {
+      actionMarkup = `<div class="field-actions"><button class="action compact secondary" type="button" data-action="confirm-field" data-field="${field.key}">确认候选</button><button class="action compact primary" type="button" data-action="edit-field" data-field="${field.key}">修正字段</button><button class="text-button" type="button" data-action="mark-unknown" data-field="${field.key}">无法判断</button><button class="text-button" type="button" data-action="focus-field" data-field="${field.key}">查看证据</button></div>`;
+    } else if (field.status === "machine_extracted" || field.status === "imported") {
       actionMarkup = `<div class="field-actions"><button class="action compact secondary" type="button" data-action="confirm-field" data-field="${field.key}">确认字段</button><button class="action compact primary" type="button" data-action="edit-field" data-field="${field.key}">修正字段</button><button class="text-button" type="button" data-action="focus-field" data-field="${field.key}">查看证据</button></div>`;
     } else {
       actionMarkup = `<div class="field-actions"><button class="action compact secondary" type="button" data-action="edit-field" data-field="${field.key}">修正字段</button><button class="text-button" type="button" data-action="focus-field" data-field="${field.key}">定位证据</button></div>`;
     }
-    const candidateNote = field.key === "amount" && field.confidence === "low" && field.status !== "unknown" ? `<span class="field-evidence">候选 ${formatMoney(field.value)} · 原文 ${formatMoney(caseItem.documentAmount)}</span>` : `<span class="field-evidence">来源：${escapeHtml(field.source)}</span>`;
+    const candidateNote = field.key === "amount" && field.blocking ? `<span class="field-evidence">候选 ${formatMoney(field.value)} · 原文 ${formatMoney(caseItem.documentAmount)}</span>` : `<span class="field-evidence">来源：${escapeHtml(field.source)}</span>`;
     return `<div class="field-row ${active ? "is-active" : ""} ${field.status === "unknown" ? "is-unknown" : ""}" data-field-row="${field.key}"><div class="field-label"><span>${escapeHtml(field.label)}</span><span class="confidence ${confidence.className}">${escapeHtml(confidence.text)}</span></div><div class="field-value-line"><strong>${value}</strong>${field.status === "machine_extracted" ? `<span>机器候选</span>` : ""}</div>${candidateNote}${actionMarkup}</div>`;
   }
 
@@ -560,11 +788,39 @@
     if (!caseItem || !rule) return "";
     const meta = ruleStatusMeta(rule.status);
     const isUnknown = rule.status === "UNKNOWN";
+    const evidenceField = rule.evidenceField || (rule.id === "required_fields" ? fieldEntries(caseItem).find((field) => field.status === "unknown")?.key : "amount") || "amount";
     const suggestedItems = (rule.actionItems || []).map((item) => ({ item, source: "系统建议" }));
     const humanItems = (caseItem.actionListEdits?.[rule.id] || []).map((item) => ({ item, source: "人工补充" }));
     const actionItems = [...suggestedItems, ...humanItems];
     const actionList = actionItems.length ? `<div class="action-list">${actionItems.map((entry, index) => `<label><input type="checkbox" data-action-item="${index}" checked><span><small>${entry.source}</small>${escapeHtml(entry.item)}</span></label>`).join("")}</div>` : `<p class="field-evidence">当前规则不需要补充行动。</p>`;
-    return `<div class="prototype-overlay prototype-finding-overlay"><aside class="prototype-finding-dialog" role="dialog" aria-modal="true" aria-labelledby="finding-title"><div class="drawer-header"><div><span class="status ${meta.className}">${meta.label}</span><h2 id="finding-title">${escapeHtml(rule.name)}</h2></div><button class="dialog-close" type="button" data-action="close-finding" aria-label="关闭详情">&times;</button></div><section class="detail-section"><h3>${isUnknown ? "为什么无法判断" : "为什么出现异常"}</h3><p>${escapeHtml(rule.reason)}</p>${!isUnknown && rule.actual !== undefined ? `<dl class="comparison-list"><div><dt>实际值</dt><dd>${formatMoney(rule.actual)}</dd></div><div><dt>规则阈值</dt><dd>${rule.expected === undefined ? "—" : `≤ ${formatMoney(rule.expected)}`}</dd></div><div><dt>状态</dt><dd>${meta.label}</dd></div></dl>` : ""}</section><section class="detail-section"><h3>判断依据</h3><p><strong>规则版本：</strong>${escapeHtml(rule.id)} · ${isUnknown ? "结果未知" : "v1.1"}</p><p><strong>规则集：</strong>policy_demo_travel v1.2</p><a class="evidence-link" href="#" data-action="back-to-field" data-field="amount">${escapeHtml(rule.evidence)}</a></section><section class="detail-section"><h3>${isUnknown ? "建议补充" : "行动清单（模拟）"}</h3>${actionList}<div class="action-add-form"><label>补充一项人工说明<input data-action-draft placeholder="例如：说明负责人确认依据"></label><button class="action compact secondary" type="button" data-action="save-action-item" data-rule-id="${escapeHtml(rule.id)}">加入清单</button></div><p class="field-evidence">系统建议与人工编辑分别记录；本 Demo 不发送真实通知。</p></section><div class="view-actions drawer-actions"><button class="action secondary" type="button" data-action="back-to-field" data-field="amount">检查字段</button><button class="action primary" type="button" data-action="open-decision">进入人工决定</button></div></aside></div>`;
+    const expectedLabel = rule.id === "travel_limit" ? "规则上限" : "申请金额";
+    const comparison = !isUnknown && rule.actual !== undefined
+      ? `<dl class="comparison-list"><div><dt>实际值</dt><dd>${formatMoney(rule.actual)}</dd></div><div><dt>${expectedLabel}</dt><dd>${formatMoney(rule.expected)}</dd></div><div><dt>状态</dt><dd>${meta.label}</dd></div></dl>`
+      : "";
+    return `<div class="prototype-overlay prototype-finding-overlay"><aside class="prototype-finding-dialog" role="dialog" aria-modal="true" aria-labelledby="finding-title">
+      <div class="drawer-header"><div><span class="status ${meta.className}">${meta.label}</span><h2 id="finding-title">${escapeHtml(rule.name)}</h2></div><button class="dialog-close" type="button" data-action="close-finding" aria-label="关闭详情">&times;</button></div>
+      <section class="detail-section"><h3>${isUnknown ? "为什么无法判断" : "为什么出现异常"}</h3><p>${escapeHtml(rule.reason)}</p>${comparison}</section>
+      <section class="detail-section"><h3>判断依据</h3><p><strong>规则：</strong>${escapeHtml(rule.id)} · policy_demo_travel v1.2</p><a class="evidence-link" href="#" data-action="back-to-field" data-field="${evidenceField}">${escapeHtml(rule.evidence)}</a></section>
+      <section class="detail-section"><h3>${isUnknown ? "建议补充" : "行动清单（模拟）"}</h3>${actionList}<div class="action-add-form"><label>补充一项人工说明<input data-action-draft placeholder="例如：说明负责人确认依据"></label><button class="action compact secondary" type="button" data-action="save-action-item" data-rule-id="${escapeHtml(rule.id)}">加入清单</button></div><p class="field-evidence">系统建议与人工编辑分别记录。本 Demo 不发送真实通知。</p></section>
+      <div class="view-actions drawer-actions"><button class="action secondary" type="button" data-action="back-to-field" data-field="${evidenceField}">查看依据</button>${caseItem.status === "checked" ? '<button class="action primary" type="button" data-action="open-decision">进入人工决定</button>' : ""}</div>
+    </aside></div>`;
+  }
+
+  function decisionValidation(caseItem, decision) {
+    if (!caseItem?.rules || caseItem.rulesStale || caseItem.status !== "checked") return "请先运行当前规则检查。";
+    if (!decision?.choice) return "请先选择一项决定。";
+    if (decision.choice === "PRECHECK_PASS") {
+      return caseItem.rules.some((rule) => rule.status !== "PASS") ? "请先处理异常或未知项。" : "";
+    }
+    if (!decision.reason.trim()) return "请填写决定理由。";
+    if (caseItem.rules.some((rule) => rule.status !== "PASS") && !decision.findingIds.length) return "请至少关联一项异常或未知。";
+    return "";
+  }
+
+  function refreshDecisionSubmit() {
+    const message = decisionValidation(currentCase(), state.decision);
+    overlayRoot.querySelector('[data-action="submit-decision"]').disabled = Boolean(message);
+    overlayRoot.querySelector("[data-decision-help]").textContent = message;
   }
 
   function renderDecisionOverlay() {
@@ -578,8 +834,7 @@
     const findings = sortedRules(caseItem).filter((rule) => rule.status !== "PASS");
     const canPass = !unknown && !exception;
     const needsReason = choice === "RETURN" || choice === "REQUEST_MORE_INFORMATION";
-    const hasFinding = (state.decision?.findingIds || []).length > 0;
-    const canSubmit = Boolean(choice) && (choice === "PRECHECK_PASS" || (reason.trim().length > 0 && hasFinding));
+    const validation = decisionValidation(caseItem, state.decision);
     const options = [
       { value: "PRECHECK_PASS", title: "预审通过", description: canPass ? "规则检查全部通过；决定将进入正式流程。" : "存在异常或未知项时，首版不提供覆盖通过。", disabled: !canPass },
       { value: "RETURN", title: "退回修改", description: "将已确认的问题和行动清单交给员工处理。", disabled: false },
@@ -598,7 +853,7 @@
     const reasonMarkup = needsReason ? `
       <div class="decision-reason">
         <label>决定理由（必填）<textarea data-decision-reason placeholder="说明本次退回或补充的原因">${escapeHtml(reason)}</textarea></label>
-        <fieldset class="finding-associations"><legend>关联问题（至少选择一项）</legend>${associationMarkup}</fieldset>
+        ${findings.length ? `<fieldset class="finding-associations"><legend>关联问题（至少选择一项）</legend>${associationMarkup}</fieldset>` : ""}
       </div>` : "";
     return `
       <div class="prototype-overlay">
@@ -609,7 +864,8 @@
           <fieldset class="decision-options prototype-options"><legend>选择决定</legend>${optionMarkup}</fieldset>
           ${reasonMarkup}
           <div class="prototype-note warning compact-notice"><strong>这不是最终财务审批</strong><span>正式审批与付款仍在现有流程中完成。</span></div>
-          <div class="view-actions"><button class="action secondary" type="button" data-action="close-decision">取消</button><button class="action primary" type="button" data-action="submit-decision" ${canSubmit ? "" : "disabled"}>提交人工决定</button></div>
+          <p class="field-evidence decision-help" data-decision-help aria-live="polite">${validation}</p>
+          <div class="view-actions"><button class="action secondary" type="button" data-action="close-decision">取消</button><button class="action primary" type="button" data-action="submit-decision" ${validation ? "disabled" : ""}>提交人工决定</button></div>
         </div>
       </div>`;
   }
@@ -668,7 +924,9 @@
     if (!caseItem || !input) return;
     const oldValue = caseItem.fields[fieldKey].value;
     const rawValue = input.value.trim();
-    if (!rawValue || (fieldKey === "amount" && Number.isNaN(Number(rawValue)))) {
+    if (!rawValue || (fieldKey === "amount" && !isMoney(rawValue)) ||
+        (fieldKey === "invoiceDate" && !Number.isFinite(isoDateTime(rawValue))) ||
+        (fieldKey === "category" && !expenseCategories.includes(rawValue))) {
       showToast("请填写有效的修正值。", "error");
       return;
     }
@@ -709,15 +967,9 @@
   function submitDecision() {
     const caseItem = currentCase();
     const decision = state.decision;
-    if (!caseItem || !decision || !decision.choice) return;
-    const counts = ruleCounts(caseItem);
-    const needsReason = decision.choice !== "PRECHECK_PASS";
-    if (needsReason && (!decision.reason.trim() || !decision.findingIds.length)) {
-      showToast("请填写理由并至少关联一个异常或未知项。", "error");
-      return;
-    }
-    if (decision.choice === "PRECHECK_PASS" && (counts.unknown || counts.exception)) {
-      showToast("当前原型不允许在存在未知或异常时直接通过。", "error");
+    const validation = decisionValidation(caseItem, decision);
+    if (validation) {
+      showToast(validation, "error");
       return;
     }
     const labels = { PRECHECK_PASS: "预审通过", RETURN: "退回修改", REQUEST_MORE_INFORMATION: "要求补充材料" };
@@ -747,8 +999,9 @@
     const caseItem = currentCase();
     if (action === "go-home") { state.selectedCaseId = null; state.submittedDecision = null; setView("home"); return; }
     if (action === "go-create") { state.fileFailure = false; setView("create"); return; }
+    if (action === "go-import") { setView("import"); return; }
     if (action === "show-policy") { setView("policy"); return; }
-    if (action === "reset-demo") { state.processingToken += 1; state = createInitialState(); setView("home"); showToast("演示状态已重置。", ""); return; }
+    if (action === "reset-demo") { resetDemo(); showToast("演示状态已重置。", ""); return; }
     if (action === "select-case") { const item = Object.values(state.cases).find((candidate) => candidate.id === trigger.dataset.caseId); if (item) beginCase(item); return; }
     if (action === "start-preset") { const item = caseByKey(state.selectedPreset); if (item) { state.selectedCaseId = item.id; state.fileFailure = false; beginProcessing("create", item); } return; }
     if (action === "show-file-failure") { state.fileFailure = true; render(); return; }
@@ -762,12 +1015,12 @@
     if (action === "save-field") { saveField(trigger.dataset.field); return; }
     if (action === "confirm-field") { updateFieldStatus(trigger.dataset.field, "confirmed"); showToast("字段已确认。", ""); return; }
     if (action === "mark-unknown") { updateFieldStatus(trigger.dataset.field, "unknown"); showToast("字段已标记 UNKNOWN，相关规则会保留不确定性。", "warning"); return; }
-    if (action === "focus-field") { state.focusField = trigger.dataset.field; render(); return; }
+    if (action === "focus-field") { locateEvidence(trigger.dataset.field); return; }
     if (action === "save-draft") { addEvent(caseItem, "DRAFT_SAVED", "审核员", "保存字段核对草稿", "尚未提交人工决定"); showToast("草稿已保存。", ""); return; }
     if (action === "run-precheck") { if (hasBlockingFields(caseItem)) { showToast("请先处理阻断字段。", "warning"); return; } beginProcessing("rules", caseItem); return; }
     if (action === "open-finding") { state.selectedRuleId = trigger.dataset.ruleId; overlayRoot.innerHTML = renderFindingOverlay(); return; }
     if (action === "close-finding") { overlayRoot.innerHTML = ""; state.selectedRuleId = null; return; }
-    if (action === "back-to-field") { const field = trigger.dataset.field; overlayRoot.innerHTML = ""; state.selectedRuleId = null; state.focusField = field || "amount"; setView("review"); return; }
+    if (action === "back-to-field") { locateEvidence(trigger.dataset.field); return; }
     if (action === "save-action-item") {
       const input = overlayRoot.querySelector("[data-action-draft]");
       const text = input?.value.trim();
@@ -782,7 +1035,7 @@
       showToast("人工补充项已加入清单，并已记录到时间线。", "");
       return;
     }
-    if (action === "open-decision") { if (!caseItem.rules || caseItem.rulesStale) { showToast("当前结果已过期，请重新运行规则。", "warning"); return; } state.decision = { choice: "", reason: "", findingIds: [] }; overlayRoot.innerHTML = renderDecisionOverlay(); return; }
+    if (action === "open-decision") { if (!caseItem.rules || caseItem.rulesStale || caseItem.status !== "checked") return; state.decision = { choice: "", reason: "", findingIds: [] }; overlayRoot.innerHTML = renderDecisionOverlay(); return; }
     if (action === "close-decision") { state.decision = null; overlayRoot.innerHTML = ""; return; }
     if (action === "submit-decision") { submitDecision(); return; }
     if (action === "close-success") { state.submittedDecision = null; overlayRoot.innerHTML = ""; render(); return; }
@@ -800,6 +1053,7 @@
 
   function handleChange(event) {
     const target = event.target;
+    if (target.matches('[data-import-form] input[type="file"]')) { handleImportFile(target); return; }
     if (target.matches("[data-preset]")) {
       state.selectedPreset = target.value;
       render();
@@ -817,7 +1071,7 @@
       const ids = new Set(state.decision.findingIds || []);
       if (target.checked) ids.add(id); else ids.delete(id);
       state.decision.findingIds = Array.from(ids);
-      overlayRoot.innerHTML = renderDecisionOverlay();
+      refreshDecisionSubmit();
     }
   }
 
@@ -825,18 +1079,32 @@
     if (event.target.matches("[data-decision-reason]")) {
       if (!state.decision) return;
       state.decision.reason = event.target.value;
-      const selection = overlayRoot.querySelector(`[data-decision-choice][value="${state.decision.choice}"]`);
-      if (selection) selection.checked = true;
+      refreshDecisionSubmit();
     }
   }
 
   appRoot.addEventListener("click", handleClick);
   appRoot.addEventListener("change", handleChange);
   appRoot.addEventListener("input", handleInput);
+  appRoot.addEventListener("submit", (event) => {
+    const field = event.target.dataset.fieldForm;
+    if (field) { event.preventDefault(); saveField(field); return; }
+    importCase(event);
+  });
+
+  function resetDemo() {
+    const nextToken = state.processingToken + 1;
+    for (const caseItem of Object.values(state.cases)) {
+      if (caseItem.attachmentUrl) URL.revokeObjectURL(caseItem.attachmentUrl);
+    }
+    state = createInitialState();
+    state.processingToken = nextToken;
+    setView("home");
+  }
 
   window.__expensePrototype = {
     getState: () => clone(state),
-    reset: () => { state.processingToken += 1; state = createInitialState(); setView("home"); },
+    reset: resetDemo,
     selectCase: (key) => { const item = caseByKey(key); if (item) beginCase(item); },
     runRules: () => { const item = currentCase(); if (item) beginProcessing("rules", item); }
   };

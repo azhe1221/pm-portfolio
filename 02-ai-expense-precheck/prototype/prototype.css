@@ -322,6 +322,65 @@
   font-size: 12px;
 }
 
+.import-form,
+.import-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.import-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+}
+
+.import-form label {
+  display: grid;
+  gap: 5px;
+  font-weight: 700;
+}
+
+.import-form input,
+.import-form select {
+  width: 100%;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--prototype-border-strong);
+  border-radius: 4px;
+  background: var(--prototype-surface);
+  color: var(--prototype-ink);
+  font: inherit;
+  font-weight: 400;
+}
+
+.import-form fieldset {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--prototype-border);
+}
+
+.import-error {
+  margin: 0;
+  color: var(--prototype-danger);
+}
+
+.attachment-preview {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  max-width: 100%;
+}
+
+.attachment-pdf {
+  width: 100%;
+  height: 320px;
+}
+
+.attachment-image {
+  max-width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+}
+
 .view-actions {
   display: flex;
   justify-content: flex-end;
@@ -392,6 +451,37 @@
   min-height: 450px;
 }
 
+.evidence-target {
+  padding: 4px;
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+  scroll-margin-block: 24px;
+}
+
+.evidence-target.is-located {
+  background: var(--prototype-primary-soft);
+  outline: 2px solid var(--prototype-primary);
+}
+
+.evidence-target.needs-review {
+  border: 1px solid var(--prototype-danger);
+  background: var(--prototype-danger-soft);
+  color: var(--prototype-danger);
+}
+
+.document-amount {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.document-materials {
+  margin: 4px 12px;
+  color: var(--prototype-muted);
+  font-size: 13px;
+}
+
 .prototype-fields .field-row {
   cursor: default;
 }
@@ -400,8 +490,10 @@
   background: var(--prototype-subtle);
 }
 
+.prototype-fields .field-row.is-active,
 .prototype-fields .field-row.is-active:hover {
-  background: var(--prototype-danger-soft);
+  background: var(--prototype-primary-soft);
+  box-shadow: inset 4px 0 0 var(--prototype-primary);
 }
 
 .field-edit-form {
@@ -816,6 +908,11 @@
 
 .prototype-decision-row.is-disabled {
   cursor: not-allowed;
+}
+
+.decision-help:not(:empty) {
+  margin-top: 12px;
+  color: var(--prototype-danger);
 }
 
 .prototype-timeline {
